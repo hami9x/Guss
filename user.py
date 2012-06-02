@@ -1,12 +1,7 @@
 import hashlib
 from datetime import datetime, timedelta
-from gettext import gettext as _
 from google.appengine.ext import db
-from requesthandler import RequestHandler
 from utils import generate_random_string
-
-def get_login_url():
-    return "/user/login"
 
 def generate_cookie_token():
     return generate_random_string(30)
@@ -81,48 +76,3 @@ class UserCookieModel(db.Model):
     nickname = db.StringProperty()
     token = db.StringProperty()
 
-class LoginHandler(RequestHandler):
-    def get(self):
-        render_notice = lambda values: self.response.out.write(self.render("noticepage", values))
-        if self.get_current_user() != None:
-            values = {
-                    "message": _("You've logged in, why do you want to do this again?"),
-                    "redirect": "/",
-                    }
-            render_notice(values)
-            return
-
-        successful = self.request.get("successful", None)
-        if successful == "1":
-            values = {
-                    "message": _("You successfully signed in, welcome back!"),
-                    "redirect": self.request.get("referer"),
-                    }
-            render_notice(values)
-        elif successful == "0":
-            values = {
-                    "message": _("Login failed, user doesn't exists, you could try again."),
-                    "redirect": get_login_url(),
-                    }
-            render_notice(values)
-        elif successful == "-1":
-            values = {
-                    "message": _("The user is valid but not verified,\
-                            check your email to find the confirmation link\
-                            we sent to you when you registered."),
-                    "redirect": None,
-                    }
-            render_notice(values)
-        else:
-            values = { "referer": self.request.headers.get("Referer", "/") }
-            self.response.out.write(self.render("loginpage", values))
-
-    def post(self):
-        nickname = self.request.get("nickname")
-        password = self.request.get("password")
-        referer = self.request.get("referer")
-        model = UserModel(nickname=nickname, password=password)
-        login = model.login()
-        if login == 1:
-            save_cookie(self, nickname)
-        return self.redirect(get_login_url()+"?successful=%s&referer=%s" % (str(login), referer))

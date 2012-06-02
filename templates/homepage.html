@@ -1,8 +1,11 @@
 <html>
     <body>
-        {% if user %} hello {{ user.nickname }}
+        {% if user %}
+        {{ gettext("hello %(name)s", name=user.nickname) }}
+            <br/>
+            <a href="{{logout_url}}">{{gettext("Logout")}}</a>
         {% else %}
-            <a href="{{login_url}}">Login</a>
+            <a href="{{login_url}}">{{gettext("Login")}}</a>
         {% endif %}
     </body>
 </html>
