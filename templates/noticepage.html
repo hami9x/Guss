@@ -1,6 +1,6 @@
 <html>
 <head>
-    <meta http-equiv="Refresh" content="5;url={{redirect}}">
+    {% if redirect %}<meta http-equiv="Refresh" content="5;url={{redirect}}">{% endif %}
 </head>
 <body>
     {{ message }}
