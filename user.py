@@ -1,8 +1,49 @@
 import hashlib
+from datetime import datetime, timedelta
 from gettext import gettext as _
-import webapp2
 from google.appengine.ext import db
 from requesthandler import RequestHandler
+from utils import generate_random_string
+
+def generate_cookie_token():
+    return generate_random_string(30)
+
+def save_cookie(handler, nickname):
+    token = generate_cookie_token()
+    cookie_value = nickname + "|" + token
+    expire = datetime.now() + timedelta(days=30)
+    handler.response.set_cookie("_", cookie_value, expires = expire, httponly=True, overwrite=True)
+    q = UserCookieModel.all().filter("nickname =", nickname).get()
+    if not q:
+        model = UserCookieModel(nickname=nickname, token=token)
+        model.put()
+    else:
+        q.token = token
+        q.put()
+
+class UserInfo:
+    def __init__(self, nickname, email):
+        self.nickname = nickname
+        self.email = email
+
+def get_current_user(handler):
+    nickname = handler.session.get("nickname", None)
+    if nickname == None:
+        value = handler.cookies.get("_")
+        l = value.split("|")
+        nickname = l[0]
+        token = l[1]
+        q = UserCookieModel.all().filter("nickname =", nickname).get()
+        if (not q) or (q.token != token):
+            return None
+        else:
+            q = db.GqlQuery("SELECT email FROM UserModel WHERE nickname = :1", nickname).get()
+            handler.session["nickname"] = nickname
+            handler.session["email"] = q.email
+            return UserInfo(nickname, q.email)
+    else:
+        return UserInfo(nickname, handler.session.get("email"))
+
 
 class UserModel(db.Model):
     nickname = db.StringProperty()
@@ -32,23 +73,26 @@ class UserModel(db.Model):
                 return -1
         else: return 0
 
+class UserCookieModel(db.Model):
+    nickname = db.StringProperty()
+    token = db.StringProperty()
 
 class LoginHandler(RequestHandler):
     def get(self):
         successful = self.request.get("successful", None)
-        render_notice = lambda: self.response.out.write(self.render("noticepage", values))
+        render_notice = lambda values: self.response.out.write(self.render("noticepage", values))
         if successful == "1":
             values = {
                     "message": _("You successfully signed in, welcome back!"),
-                    "redirect": self.request.headers.get("Referer", "/"),
+                    "redirect": self.request.get("referer"),
                     }
-            render_notice()
+            render_notice(values)
         elif successful == "0":
             values = {
                     "message": _("Login failed, user doesn't exists, you could try again."),
-                    "redirect": self.request.headers.get("/user/login", "/"),
+                    "redirect": "/user/login",
                     }
-            render_notice()
+            render_notice(values)
         elif successful == "-1":
             values = {
                     "message": _("The user is valid but not verified,\
@@ -56,13 +100,17 @@ class LoginHandler(RequestHandler):
                             we sent to you when you registered."),
                     "redirect": None,
                     }
-            render_notice()
+            render_notice(values)
         else:
-            self.response.out.write(self.render("loginpage"))
+            values = { "referer": self.request.headers.get("Referer", "/") }
+            self.response.out.write(self.render("loginpage", values))
 
     def post(self):
         nickname = self.request.get("nickname")
         password = self.request.get("password")
+        referer = self.request.get("referer")
         model = UserModel(nickname=nickname, password=password)
         login = model.login()
-        return webapp2.redirect("/user/login?successful=%s" % str(login))
+        if login == 1:
+            save_cookie(self, nickname)
+        return self.redirect("/user/login?successful=%s&referer=%s" % (str(login), referer))

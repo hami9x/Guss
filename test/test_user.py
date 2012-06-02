@@ -1,8 +1,9 @@
+import webapp2
 import unittest
 from google.appengine.ext import testbed
 from guss import user
 
-class TestLogin(unittest.TestCase):
+class TestUser(unittest.TestCase):
     def setUp(self):
         self.testbed = testbed.Testbed()
         self.testbed.activate()
@@ -14,10 +15,17 @@ class TestLogin(unittest.TestCase):
         model.put();
 
     def testLogin(self):
-        self.assertEqual(1, user.UserModel(nickname="testguy", password="testpass").login())
         self.assertEqual(0, user.UserModel(nickname="testguy", password="wrongpass").login())
         self.assertEqual(0, user.UserModel(nickname="wrongguy", password="testpass").login())
         self.assertEqual(-1, user.UserModel(nickname="unverifiedguy", password="testpass2").login())
+
+        self.assertEqual(1, user.UserModel(nickname="testguy", password="testpass").login())
+        #Test cookie save
+        request = webapp2.RequestHandler()
+        request.response = webapp2.Response()
+        user.save_cookie(request, "testguy")
+        q = user.UserCookieModel.all().filter("nickname =", "testguy").get()
+        self.assertTrue(q and (len(q.token) > 0))
 
     def tearDown(self):
         self.testbed.deactivate()
