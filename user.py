@@ -83,8 +83,16 @@ class UserCookieModel(db.Model):
 
 class LoginHandler(RequestHandler):
     def get(self):
-        successful = self.request.get("successful", None)
         render_notice = lambda values: self.response.out.write(self.render("noticepage", values))
+        if self.get_current_user() != None:
+            values = {
+                    "message": _("You've logged in, why do you want to do this again?"),
+                    "redirect": "/",
+                    }
+            render_notice(values)
+            return
+
+        successful = self.request.get("successful", None)
         if successful == "1":
             values = {
                     "message": _("You successfully signed in, welcome back!"),
