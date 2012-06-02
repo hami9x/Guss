@@ -14,10 +14,10 @@ class TestLogin(unittest.TestCase):
         model.put();
 
     def testLogin(self):
-        self.assertEqual(1, user.login("testguy", "testpass"))
-        self.assertEqual(0, user.login("testguy", "wrongpass"))
-        self.assertEqual(0, user.login("wrongguy", "testpass"))
-        self.assertEqual(-1, user.login("unverifiedguy", "testpass2"))
+        self.assertEqual(1, user.UserModel(nickname="testguy", password="testpass").login())
+        self.assertEqual(0, user.UserModel(nickname="testguy", password="wrongpass").login())
+        self.assertEqual(0, user.UserModel(nickname="wrongguy", password="testpass").login())
+        self.assertEqual(-1, user.UserModel(nickname="unverifiedguy", password="testpass2").login())
 
     def tearDown(self):
-        testbed.deactivate()
+        self.testbed.deactivate()

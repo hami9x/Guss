@@ -1,0 +1,6 @@
+[submodule "babel"]
+	path = babel
+	url = ./babel
+[submodule "pytz"]
+	path = pytz
+	url = ./pytz
