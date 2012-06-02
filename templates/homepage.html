@@ -1,0 +1,8 @@
+<html>
+    <body>
+        {% if user %} hello {{ user.nickname }}
+        {% else %}
+            <a href="{{login_url}}">Login</a>
+        {% endif %}
+    </body>
+</html>

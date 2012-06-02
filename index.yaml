@@ -13,5 +13,10 @@ indexes:
 - kind: UserModel
   properties:
   - name: nickname
+  - name: email
+
+- kind: UserModel
+  properties:
+  - name: nickname
   - name: password
   - name: verified

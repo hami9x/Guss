@@ -5,6 +5,9 @@ from google.appengine.ext import db
 from requesthandler import RequestHandler
 from utils import generate_random_string
 
+def get_login_url():
+    return "/user/login"
+
 def generate_cookie_token():
     return generate_random_string(30)
 
@@ -29,7 +32,8 @@ class UserInfo:
 def get_current_user(handler):
     nickname = handler.session.get("nickname", None)
     if nickname == None:
-        value = handler.cookies.get("_")
+        value = handler.request.cookies.get("_", None)
+        if value == None: return None
         l = value.split("|")
         nickname = l[0]
         token = l[1]
@@ -90,7 +94,7 @@ class LoginHandler(RequestHandler):
         elif successful == "0":
             values = {
                     "message": _("Login failed, user doesn't exists, you could try again."),
-                    "redirect": "/user/login",
+                    "redirect": get_login_url(),
                     }
             render_notice(values)
         elif successful == "-1":
@@ -113,4 +117,4 @@ class LoginHandler(RequestHandler):
         login = model.login()
         if login == 1:
             save_cookie(self, nickname)
-        return self.redirect("/user/login?successful=%s&referer=%s" % (str(login), referer))
+        return self.redirect(get_login_url()+"?successful=%s&referer=%s" % (str(login), referer))
