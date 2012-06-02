@@ -1,6 +1,8 @@
 [submodule "babel"]
 	path = babel
 	url = ./babel
+    ignore = dirty
 [submodule "pytz"]
-	path = pytz
+    path = pytz
 	url = ./pytz
+    ignore = dirty

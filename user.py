@@ -3,7 +3,6 @@ from gettext import gettext as _
 import webapp2
 from google.appengine.ext import db
 from requesthandler import RequestHandler
-import logging
 
 class UserModel(db.Model):
     nickname = db.StringProperty()
@@ -18,7 +17,7 @@ class UserModel(db.Model):
 
     @staticmethod
     def encrypt(str):
-        m = hashlib.sha224()
+        m = hashlib.sha512()
         m.update(str)
         return m.hexdigest()
 
@@ -37,27 +36,29 @@ class UserModel(db.Model):
 class LoginHandler(RequestHandler):
     def get(self):
         successful = self.request.get("successful", None)
-        if successful == None:
-            self.response.out.write(self.render("loginpage"))
+        render_notice = lambda: self.response.out.write(self.render("noticepage", values))
+        if successful == "1":
+            values = {
+                    "message": _("You successfully signed in, welcome back!"),
+                    "redirect": self.request.headers.get("Referer", "/"),
+                    }
+            render_notice()
+        elif successful == "0":
+            values = {
+                    "message": _("Login failed, user doesn't exists, you could try again."),
+                    "redirect": self.request.headers.get("/user/login", "/"),
+                    }
+            render_notice()
+        elif successful == "-1":
+            values = {
+                    "message": _("The user is valid but not verified,\
+                            check your email to find the confirmation link\
+                            we sent to you when you registered."),
+                    "redirect": None,
+                    }
+            render_notice()
         else:
-            if successful == 1:
-                values = {
-                        "message": _("You successfully signed in, welcome back!"),
-                        "redirect": self.request.headers.get("Referer", "/"),
-                        }
-            elif successful == 0:
-                values = {
-                        "message": _("Login failed, user doesn't exists, you could try again."),
-                        "redirect": self.request.headers.get("/user/login", "/"),
-                        }
-            else:
-                values = {
-                        "message": _("The user is valid but not verified,\
-                                check your email to find the confirmation link\
-                                we sent to you when you registered."),
-                        "redirect": None,
-                        }
-            self.response.out.write(self.render("noticepage", values))
+            self.response.out.write(self.render("loginpage"))
 
     def post(self):
         nickname = self.request.get("nickname")
