@@ -1,0 +1,17 @@
+<html>
+    <body>
+        <form action="" method="post">
+            <table>
+                {% for config in configs %}
+                    <tr>
+                        <td>
+                            {{ config.name }}:
+                            <input type="text" name="{{config.name}}" value="{{config.value}}">
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <input type="submit" value="{{ gettext("Save") }}"/>
+        </form>
+    </body>
+</html>

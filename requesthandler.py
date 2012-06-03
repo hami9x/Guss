@@ -3,6 +3,7 @@ import webapp2
 from webapp2_extras import i18n, sessions
 import jinja2
 import user
+import config
 
 class RequestHandler(webapp2.RequestHandler):
     jinjaEnv = jinja2.Environment(extensions=['jinja2.ext.i18n'],
@@ -11,6 +12,9 @@ class RequestHandler(webapp2.RequestHandler):
     def __init__(self, *args, **kwds):
         self.jinjaEnv.install_gettext_translations(i18n, newstyle=True)
         webapp2.RequestHandler.__init__(self, *args, **kwds)
+
+    def get_config(self, key): config.get_config(key)
+    def update_config(self, *args, **kwds): config.update_config(*args, **kwds)
 
     def render(self, name, values={}):
         return self.jinjaEnv.get_template(name+".html").render(values)

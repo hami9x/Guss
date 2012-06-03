@@ -10,6 +10,16 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: ConfigModel
+  properties:
+  - name: name
+  - name: value
+
+- kind: ConfigModel
+  properties:
+  - name: visible
+  - name: name
+
 - kind: UserModel
   properties:
   - name: nickname
