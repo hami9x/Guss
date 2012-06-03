@@ -14,7 +14,7 @@ class TestUser(unittest.TestCase):
                                     email="unverifiedguy@gmail.com", verified=False)
         model.put();
 
-    def testLogin(self):
+    def test_login(self):
         self.assertEqual(0, user.UserModel(nickname="testguy", password="wrongpass").login())
         self.assertEqual(0, user.UserModel(nickname="wrongguy", password="testpass").login())
         self.assertEqual(-1, user.UserModel(nickname="unverifiedguy", password="testpass2").login())

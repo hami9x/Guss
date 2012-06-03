@@ -1,0 +1,20 @@
+<html>
+    <body>
+        <h2>{{ gettext("User Management") }}</h2>
+        <form method="post" action="">
+            <table>
+            {% for user in users %}
+                <tr>
+                    <td><input type="checkbox" name="user_check" value="{{ user.nickname }}"></td>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ user.nickname }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.created }}</td>
+                    <td>{{ user.verified }}</td>
+                </tr>
+            {% endfor %}
+            <a href="/admin/user/add">{{ gettext("Add") }}</a>
+            <input type="submit" value="{{ gettext("Delete selected") }}">
+        </form
+    </body>
+</html>

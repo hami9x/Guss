@@ -1,13 +1,13 @@
 from selenium import selenium
 import unittest, time, re
 
-class ftest_login(unittest.TestCase):
+class TestLogin(unittest.TestCase):
     def setUp(self):
         self.verificationErrors = []
         self.selenium = selenium("localhost", 4444, "*firefox", "http://localhost:8080/")
         self.selenium.start()
 
-    def test_ftest_login(self):
+    def test_login(self):
         sel = self.selenium
         sel.open("/")
         sel.open("/user/login")

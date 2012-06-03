@@ -48,6 +48,7 @@ class UserModel(db.Model):
     nickname = db.StringProperty()
     password = db.StringProperty()
     email = db.EmailProperty()
+    created = db.DateTimeProperty(auto_now_add=True)
     verified = db.BooleanProperty()
 
     def __init__(self, *args, **kwds):
