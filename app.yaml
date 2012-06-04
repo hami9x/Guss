@@ -11,6 +11,8 @@ handlers:
   static_dir: js
 - url: /test.*
   script: gaeunit.app
+- url: /install.*
+  script: install.app
 - url: /.*
   script: app.app
 

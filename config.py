@@ -2,7 +2,7 @@ from google.appengine.ext import db
 from google.appengine.api import memcache
 
 def update_config(name, value, visible):
-    q = db.GqlQuery("SELECT value FROM ConfigModel WHERE name = :1", name).get()
+    q = db.GqlQuery("SELECT * FROM ConfigModel WHERE name = :1", name).get()
     if not q:
         model = ConfigModel(name=name, value=value, visible=visible)
         model.put()

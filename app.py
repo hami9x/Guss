@@ -1,5 +1,4 @@
 import webapp2
-import install
 import homepage
 import authhandler
 import admin_user
@@ -14,7 +13,6 @@ tempconfig["webapp2_extras.sessions"] = {
 app = webapp2.WSGIApplication([
                                 (authhandler.get_login_url(), authhandler.LoginHandler),
                                 (authhandler.get_logout_url(), authhandler.LogoutHandler),
-                                ("/install", install.InstallHandler),
                                 ("/admin/config", admin_config.AdminConfigHandler),
                                 ("/admin/user/add", admin_user.AdminAddUserHandler),
                                 ("/admin/user", admin_user.AdminUserHandler),
