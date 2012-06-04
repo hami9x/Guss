@@ -1,6 +1,8 @@
 from google.appengine.ext import db
+from webapp2_extras.i18n import _
 from requesthandler import RequestHandler
 import user
+import user_confirm
 
 #User management page
 class AdminUserHandler(RequestHandler):
@@ -29,3 +31,10 @@ class AdminAddUserHandler(RequestHandler):
         email = self.request.get("email")
         model = user.UserModel(nickname=nickname, email=email, verified=False)
         model.put()
+        user_confirm.send_confirmation_mail(self, nickname, email)
+        values = {
+                "message": _("An email has been sent to you that contains the link to activate your account, \
+                                check your mail box."),
+                "redirect": None,
+                }
+        self.response.out.write(self.render("noticepage", values))

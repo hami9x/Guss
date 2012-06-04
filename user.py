@@ -76,4 +76,3 @@ class UserModel(db.Model):
 class UserCookieModel(db.Model):
     nickname = db.StringProperty()
     token = db.StringProperty()
-

@@ -20,6 +20,11 @@ indexes:
   - name: visible
   - name: name
 
+- kind: UserConfirmationModel
+  properties:
+  - name: nickname
+  - name: token
+
 - kind: UserModel
   properties:
   - name: nickname
