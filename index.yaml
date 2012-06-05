@@ -22,19 +22,8 @@ indexes:
 
 - kind: UserConfirmationModel
   properties:
-  - name: nickname
+  - name: username
   - name: token
-
-- kind: UserModel
-  properties:
-  - name: nickname
-  - name: email
-
-- kind: UserModel
-  properties:
-  - name: nickname
-  - name: password
-  - name: verified
 
 - kind: UserModel
   properties:

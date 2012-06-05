@@ -2,13 +2,6 @@ from webapp2_extras.i18n import _
 from requesthandler import RequestHandler
 import user
 
-def get_login_url():
-    return "/user/login"
-
-def get_logout_url():
-    return "/user/logout"
-
-
 class LoginHandler(RequestHandler):
     def get(self):
         render_notice = lambda values: self.response.out.write(self.render("noticepage", values))
@@ -23,7 +16,7 @@ class LoginHandler(RequestHandler):
         elif successful == "0":
             values = {
                     "message": _("Login failed, user doesn't exists, you could try again."),
-                    "redirect": get_login_url(),
+                    "redirect": self.uri_for("login"),
                     }
             render_notice(values)
         elif successful == "-1":
@@ -38,11 +31,11 @@ class LoginHandler(RequestHandler):
             if self.get_current_user() != None:
                 values = {
                         "message": _("You've logged in, why do you want to do this again?"),
-                        "redirect": "/",
+                        "redirect": self.uri_for("home"),
                         }
                 render_notice(values)
             else:
-                values = { "referer": self.request.headers.get("Referer", "/") }
+                values = { "referer": self.request.headers.get("Referer", self.uri_for("home")) }
                 self.response.out.write(self.render("loginpage", values))
 
     def post(self):
@@ -53,10 +46,10 @@ class LoginHandler(RequestHandler):
         login = model.login()
         if login == 1:
             user.save_cookie(self, username)
-        return self.redirect(get_login_url()+"?successful=%s&referer=%s" % (str(login), referer))
+        return self.redirect(self.uri_for("login")+"?successful=%s&referer=%s" % (str(login), referer))
 
 class LogoutHandler(RequestHandler):
     def get(self):
         self.response.delete_cookie("_")
         self.session["username"] = None
-        return self.redirect("/")
+        return self.redirect(self.uri_for("home"))

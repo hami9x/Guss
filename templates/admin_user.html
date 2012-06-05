@@ -13,7 +13,7 @@
                     <td>{{ user.verified }}</td>
                 </tr>
             {% endfor %}
-            <a href="/admin/user/add">{{ gettext("Add") }}</a>
+            <a href="{{ user_add_url }}">{{ gettext("Add") }}</a>
             <input type="submit" value="{{ gettext("Delete selected") }}">
         </form
     </body>

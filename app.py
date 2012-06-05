@@ -1,9 +1,4 @@
 import webapp2
-import homepage
-import user_auth
-import user_confirm
-import admin_user
-import admin_config
 import config
 
 tempconfig = {}
@@ -12,11 +7,11 @@ tempconfig["webapp2_extras.sessions"] = {
             }
 
 app = webapp2.WSGIApplication([
-                                (user_auth.get_login_url(), user_auth.LoginHandler),
-                                (user_auth.get_logout_url(), user_auth.LogoutHandler),
-                                ("/user/confirm", user_confirm.UserConfirmHandler),
-                                ("/admin/config", admin_config.AdminConfigHandler),
-                                ("/admin/user/add", admin_user.AdminAddUserHandler),
-                                ("/admin/user", admin_user.AdminUserHandler),
-                                ("/", homepage.HomepageHandler),
-                            ], debug=True, config=tempconfig)
+                    webapp2.Route("/user/login", handler="user_auth.LoginHandler", name="login"),
+                    webapp2.Route("/user/logout", handler="user_auth.LogoutHandler", name="logout"),
+                    webapp2.Route("/user/confirm", handler="user_confirm.UserConfirmHandler", name="account-confirm"),
+                    webapp2.Route("/admin/config", handler="admin_config.AdminConfigHandler", name="manage-config"),
+                    webapp2.Route("/admin/user/add", handler="admin_user.AdminAddUserHandler", name="add-user"),
+                    webapp2.Route("/admin/user", handler="admin_user.AdminUserHandler", name="manage-user"),
+                    webapp2.Route("/", handler="homepage.HomepageHandler", name="home"),
+                ], debug=True, config=tempconfig)

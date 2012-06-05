@@ -19,6 +19,7 @@ class AdminUserHandler(RequestHandler):
         q = db.GqlQuery("SELEcT * FROM UserModel ORDER BY %s DESC LIMIT %d" % (order, limit))
         values = {
                 "users": q,
+                "user_add_url": self.uri_for("add-user")
                 }
         self.response.out.write(self.render("admin_user", values))
 

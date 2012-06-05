@@ -1,3 +1,4 @@
+import webapp2
 from google.appengine.api import mail
 from google.appengine.ext import db
 from webapp2_extras.i18n import _
@@ -6,15 +7,15 @@ import utils
 from user import UserModel
 from requesthandler import RequestHandler
 
-def generate_confirm_link(handler, username):
+def generate_confirm_link(username):
     token = utils.generate_random_string(30)
-    link = handler.request.host_url + "/user/confirm?user=%s&token=%s" % (username, token)
+    link =  webapp2.uri_for("account-confirm", _full=True)+"?user=%s&token=%s" % (username, token)
     model = UserConfirmationModel(username=username, token=token)
     model.put()
     return link
 
 
-def send_confirmation_mail(handler, username, email):
+def send_confirmation_mail(username, email):
     mail.send_mail(sender="%s Admin <%s>" % (config.get_config("site_name"), config.get_config("admin_email")),
             to="%s <%s>" % (username, email),
             subject="Confirmation mail",
@@ -22,7 +23,7 @@ def send_confirmation_mail(handler, username, email):
             Thanks for registering on our site.
             Now, click this link %(link)s to confirm your account.
             """)
-                % {"name": username, "link": generate_confirm_link(handler, username)}
+                % {"name": username, "link": generate_confirm_link(username)}
         )
 
 class UserConfirmationModel(db.Model):
@@ -48,6 +49,6 @@ class UserConfirmHandler(RequestHandler):
             values = {
                     "message": _("Congratulations! Your account has been successfully activated \
                                     , thanks for registering."),
-                    "redirect": "/",
+                    "redirect": self.uri_for("home"),
                     }
             self.response.out.write(self.render("noticepage", values))
