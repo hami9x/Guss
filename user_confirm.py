@@ -6,34 +6,34 @@ import utils
 from user import UserModel
 from requesthandler import RequestHandler
 
-def generate_confirm_link(handler, nickname):
+def generate_confirm_link(handler, username):
     token = utils.generate_random_string(30)
-    link = handler.request.host_url + "/user/confirm?user=%s&token=%s" % (nickname, token)
-    model = UserConfirmationModel(nickname=nickname, token=token)
+    link = handler.request.host_url + "/user/confirm?user=%s&token=%s" % (username, token)
+    model = UserConfirmationModel(username=username, token=token)
     model.put()
     return link
 
 
-def send_confirmation_mail(handler, nickname, email):
+def send_confirmation_mail(handler, username, email):
     mail.send_mail(sender="%s Admin <%s>" % (config.get_config("site_name"), config.get_config("admin_email")),
-            to="%s <%s>" % (nickname, email),
+            to="%s <%s>" % (username, email),
             subject="Confirmation mail",
             body=_("""Hello %(name)s,
             Thanks for registering on our site.
             Now, click this link %(link)s to confirm your account.
             """)
-                % {"name": nickname, "link": generate_confirm_link(handler, nickname)}
+                % {"name": username, "link": generate_confirm_link(handler, username)}
         )
 
 class UserConfirmationModel(db.Model):
-    nickname = db.StringProperty()
+    username = db.StringProperty()
     token = db.StringProperty()
 
 class UserConfirmHandler(RequestHandler):
     def get(self):
-        nickname = self.request.get("user")
+        username = self.request.get("user")
         token = self.request.get("token")
-        q = db.GqlQuery("SELECT token FROM UserConfirmationModel WHERE nickname = :1", nickname).get()
+        q = db.GqlQuery("SELECT token FROM UserConfirmationModel WHERE username = :1", username).get()
         if (not q) or (q.token != token):
             values = {
                     "message": _("Your confirmation link is invalid, sorry but please check your mail box again."),
@@ -42,7 +42,7 @@ class UserConfirmHandler(RequestHandler):
             self.response.out.write(self.render("noticepage", values))
         else:
             q.delete()
-            the_user = UserModel.all().filter("nickname =", nickname).get()
+            the_user = UserModel.all().filter("username =", username).get()
             the_user.verified = True
             the_user.put()
             values = {

@@ -14,7 +14,7 @@ class AdminUserHandler(RequestHandler):
         except ValueError:
             limit = self.DEFAULT_LIMIT
         order = self.request.get("order", self.DEFAULT_ORDER)
-        if not (order in ["nickname", "email", "created"]):
+        if not (order in ["username", "email", "created"]):
             order = self.DEFAULT_ORDER
         q = db.GqlQuery("SELEcT * FROM UserModel ORDER BY %s DESC LIMIT %d" % (order, limit))
         values = {
@@ -27,11 +27,11 @@ class AdminAddUserHandler(RequestHandler):
         self.response.out.write(self.render("admin_user_add"))
 
     def post(self):
-        nickname = self.request.get("nickname")
+        username = self.request.get("username")
         email = self.request.get("email")
-        model = user.UserModel(nickname=nickname, email=email, verified=False)
+        model = user.UserModel(username=username, email=email, verified=False)
         model.put()
-        user_confirm.send_confirmation_mail(self, nickname, email)
+        user_confirm.send_confirmation_mail(self, username, email)
         values = {
                 "message": _("An email has been sent to you that contains the link to activate your account, \
                                 check your mail box."),

@@ -5,9 +5,9 @@ import config
 
 class InstallHandler(webapp2.RequestHandler):
     def get(self):
-        q = UserModel.all().filter("nickname =", "admin").get()
+        q = UserModel.all().filter("username =", "admin").get()
         if not q:
-            model = UserModel(nickname="admin", password="admin", email="admin@gmail.com", verified=True)
+            model = UserModel(username="admin", password="admin", email="admin@gmail.com", verified=True)
             model.put()
 
         conf = [

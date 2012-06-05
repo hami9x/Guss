@@ -6,46 +6,46 @@ from utils import generate_random_string
 def generate_cookie_token():
     return generate_random_string(30)
 
-def save_cookie(handler, nickname):
+def save_cookie(handler, username):
     token = generate_cookie_token()
-    cookie_value = nickname + "|" + token
+    cookie_value = username + "|" + token
     expire = datetime.now() + timedelta(days=30)
     handler.response.set_cookie("_", cookie_value, expires = expire, httponly=True, overwrite=True)
-    q = UserCookieModel.all().filter("nickname =", nickname).get()
+    q = UserCookieModel.all().filter("username =", username).get()
     if not q:
-        model = UserCookieModel(nickname=nickname, token=token)
+        model = UserCookieModel(username=username, token=token)
         model.put()
     else:
         q.token = token
         q.put()
 
 class UserInfo:
-    def __init__(self, nickname, email):
-        self.nickname = nickname
+    def __init__(self, username, email):
+        self.username = username
         self.email = email
 
 def get_current_user(handler):
-    nickname = handler.session.get("nickname", None)
-    if nickname == None:
+    username = handler.session.get("username", None)
+    if username == None:
         value = handler.request.cookies.get("_", None)
         if value == None: return None
         l = value.split("|")
-        nickname = l[0]
+        username = l[0]
         token = l[1]
-        q = UserCookieModel.all().filter("nickname =", nickname).get()
+        q = UserCookieModel.all().filter("username =", username).get()
         if (not q) or (q.token != token):
             return None
         else:
-            q = db.GqlQuery("SELECT email FROM UserModel WHERE nickname = :1", nickname).get()
-            handler.session["nickname"] = nickname
+            q = db.GqlQuery("SELECT email FROM UserModel WHERE username = :1", username).get()
+            handler.session["username"] = username
             handler.session["email"] = q.email
-            return UserInfo(nickname, q.email)
+            return UserInfo(username, q.email)
     else:
-        return UserInfo(nickname, handler.session.get("email"))
+        return UserInfo(username, handler.session.get("email"))
 
 
 class UserModel(db.Model):
-    nickname = db.StringProperty()
+    username = db.StringProperty()
     password = db.StringProperty()
     email = db.EmailProperty()
     created = db.DateTimeProperty(auto_now_add=True)
@@ -63,8 +63,8 @@ class UserModel(db.Model):
         return m.hexdigest()
 
     def login(self):
-        q = db.GqlQuery("SELECT password, verified FROM UserModel WHERE nickname = :1",
-                    self.nickname).get()
+        q = db.GqlQuery("SELECT password, verified FROM UserModel WHERE username = :1",
+                    self.username).get()
         if not q: return 0
         if (self.encrypt(self.password) == q.password):
             if q.verified:
@@ -74,5 +74,5 @@ class UserModel(db.Model):
         else: return 0
 
 class UserCookieModel(db.Model):
-    nickname = db.StringProperty()
+    username = db.StringProperty()
     token = db.StringProperty()

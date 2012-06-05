@@ -5,9 +5,9 @@
             <table>
             {% for user in users %}
                 <tr>
-                    <td><input type="checkbox" name="user_check" value="{{ user.nickname }}"></td>
+                    <td><input type="checkbox" name="user_check" value="{{ user.username }}"></td>
                     <td>{{ loop.index }}</td>
-                    <td>{{ user.nickname }}</td>
+                    <td>{{ user.username }}</td>
                     <td>{{ user.email }}</td>
                     <td>{{ user.created }}</td>
                     <td>{{ user.verified }}</td>

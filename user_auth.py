@@ -46,17 +46,17 @@ class LoginHandler(RequestHandler):
                 self.response.out.write(self.render("loginpage", values))
 
     def post(self):
-        nickname = self.request.get("nickname")
+        username = self.request.get("username")
         password = self.request.get("password")
         referer = self.request.get("referer")
-        model = user.UserModel(nickname=nickname, password=password)
+        model = user.UserModel(username=username, password=password)
         login = model.login()
         if login == 1:
-            user.save_cookie(self, nickname)
+            user.save_cookie(self, username)
         return self.redirect(get_login_url()+"?successful=%s&referer=%s" % (str(login), referer))
 
 class LogoutHandler(RequestHandler):
     def get(self):
         self.response.delete_cookie("_")
-        self.session["nickname"] = None
+        self.session["username"] = None
         return self.redirect("/")

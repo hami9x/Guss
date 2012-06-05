@@ -12,7 +12,7 @@ class TestLogin(unittest.TestCase):
         sel.open("/")
         sel.open("/user/login")
         sel.wait_for_page_to_load("60000")
-        sel.type("name=nickname", "admin")
+        sel.type("name=username", "admin")
         sel.type("name=password", "admin")
         sel.click("xpath=//form/input[4]")
         sel.wait_for_page_to_load("60000")
