@@ -24,7 +24,7 @@ class TestUser(unittest.TestCase):
         request = webapp2.RequestHandler()
         request.response = webapp2.Response()
         user.save_cookie(request, "testguy")
-        q = user.UserCookieModel.all().filter("username =", "testguy").get()
+        q = user.UserCookieModel.query(user.UserCookieModel.username=="testguy").get()
         self.assertTrue(q and (len(q.token) > 0))
 
     def tearDown(self):

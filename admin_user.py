@@ -1,7 +1,7 @@
-from google.appengine.ext import db
+from google.appengine.ext import ndb
 from webapp2_extras.i18n import _
 from requesthandler import RequestHandler
-import user
+from user import UserModel
 import user_confirm
 
 #User management page
@@ -16,7 +16,7 @@ class AdminUserHandler(RequestHandler):
         order = self.request.get("order", self.DEFAULT_ORDER)
         if not (order in ["username", "email", "created"]):
             order = self.DEFAULT_ORDER
-        q = db.GqlQuery("SELEcT * FROM UserModel ORDER BY %s DESC LIMIT %d" % (order, limit))
+        q = ndb.gql("SELEcT * FROM UserModel ORDER BY %s DESC LIMIT %d" % (order, limit))
         values = {
                 "users": q,
                 "user_add_url": self.uri_for("add-user")
@@ -30,7 +30,7 @@ class AdminAddUserHandler(RequestHandler):
     def post(self):
         username = self.request.get("username")
         email = self.request.get("email")
-        model = user.UserModel(username=username, email=email, verified=False)
+        model = UserModel(username=username, email=email, verified=False)
         model.put()
         user_confirm.send_confirmation_mail(self, username, email)
         values = {

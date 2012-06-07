@@ -1,6 +1,6 @@
 import webapp2
 from google.appengine.api import mail
-from google.appengine.ext import db
+from google.appengine.ext import ndb
 from webapp2_extras.i18n import _
 import config
 import utils
@@ -26,15 +26,15 @@ def send_confirmation_mail(username, email):
                 % {"name": username, "link": generate_confirm_link(username)}
         )
 
-class UserConfirmationModel(db.Model):
-    username = db.StringProperty()
-    token = db.StringProperty()
+class UserConfirmationModel(ndb.Model):
+    username = ndb.StringProperty()
+    token = ndb.StringProperty()
 
 class UserConfirmHandler(RequestHandler):
     def get(self):
         username = self.request.get("user")
         token = self.request.get("token")
-        q = db.GqlQuery("SELECT token FROM UserConfirmationModel WHERE username = :1", username).get()
+        q = ndb.gql("SELECT token FROM UserConfirmationModel WHERE username = :1", username).get()
         if (not q) or (q.token != token):
             values = {
                     "message": _("Your confirmation link is invalid, sorry but please check your mail box again."),
@@ -43,7 +43,7 @@ class UserConfirmHandler(RequestHandler):
             self.response.out.write(self.render("noticepage", values))
         else:
             q.delete()
-            the_user = UserModel.all().filter("username =", username).get()
+            the_user = UserModel.query(UserModel.username==username).get()
             the_user.verified = True
             the_user.put()
             values = {

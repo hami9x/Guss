@@ -1,10 +1,9 @@
-from google.appengine.ext import db
 from requesthandler import RequestHandler
-from config import update_config_cache
+from config import update_config_cache, ConfigModel
 
 class AdminConfigHandler(RequestHandler):
     def get_all_visible_config(self):
-        return db.GqlQuery("SELECT * FROM ConfigModel WHERE visible = TRUE ORDER BY name")
+        return ConfigModel.query(ConfigModel.visible==True).order(ConfigModel.name)
 
     def get(self):
         q = self.get_all_visible_config()
