@@ -1,6 +1,7 @@
 import webapp2
 import unittest
 from google.appengine.ext import testbed
+from google.appengine.ext import ndb
 from guss import user
 
 class TestUser(unittest.TestCase):
@@ -9,7 +10,7 @@ class TestUser(unittest.TestCase):
         self.testbed.activate()
         self.testbed.init_datastore_v3_stub()
         model = user.UserModel(username="testguy", password="testpass", email="testemail@gmail.com", verified=True)
-        model.put();
+        self.testguy_key = model.put();
         model = user.UserModel(username="unverifiedguy", password="testpass2",
                                     email="unverifiedguy@gmail.com", verified=False)
         model.put();
@@ -23,8 +24,8 @@ class TestUser(unittest.TestCase):
         #Test cookie save
         request = webapp2.RequestHandler()
         request.response = webapp2.Response()
-        user.save_cookie(request, "testguy")
-        q = user.UserCookieModel.query(user.UserCookieModel.username=="testguy").get()
+        user.save_cookie(request, self.testguy_key)
+        q = ndb.Key("UserCookieModel", self.testguy_key.id()).get()
         self.assertTrue(q and (len(q.token) > 0))
 
     def tearDown(self):

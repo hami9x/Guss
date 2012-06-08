@@ -45,7 +45,7 @@ class LoginHandler(RequestHandler):
         model = user.UserModel(username=username, password=password)
         login = model.login()
         if login == 1:
-            user.save_cookie(self, username)
+            user.save_cookie(self, model.key)
         return self.redirect(self.uri_for("login")+"?successful=%s&referer=%s" % (str(login), referer))
 
 class LogoutHandler(RequestHandler):

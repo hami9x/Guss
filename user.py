@@ -3,47 +3,6 @@ from datetime import datetime, timedelta
 from google.appengine.ext import ndb
 from utils import generate_random_string
 
-def generate_cookie_token():
-    return generate_random_string(30)
-
-def save_cookie(handler, username):
-    token = generate_cookie_token()
-    cookie_value = username + "|" + token
-    expire = datetime.now() + timedelta(days=30)
-    handler.response.set_cookie("_", cookie_value, expires = expire, httponly=True, overwrite=True)
-    q = UserCookieModel.query(UserCookieModel.username==username).get()
-    if not q:
-        model = UserCookieModel(username=username, token=token)
-        model.put()
-    else:
-        q.token = token
-        q.put()
-
-class UserInfo:
-    def __init__(self, username, email):
-        self.username = username
-        self.email = email
-
-def get_current_user(handler):
-    username = handler.session.get("username", None)
-    if username == None:
-        value = handler.request.cookies.get("_", None)
-        if value == None: return None
-        l = value.split("|")
-        username = l[0]
-        token = l[1]
-        q = UserCookieModel.query(UserCookieModel.username==username).get()
-        if (not q) or (q.token != token):
-            return None
-        else:
-            q = ndb.gql("SELECT email FROM UserModel WHERE username = :1", username).get()
-            handler.session["username"] = username
-            handler.session["email"] = q.email
-            return UserInfo(username, q.email)
-    else:
-        return UserInfo(username, handler.session.get("email"))
-
-
 class UserModel(ndb.Model):
     username = ndb.StringProperty()
     password = ndb.StringProperty()
@@ -68,11 +27,59 @@ class UserModel(ndb.Model):
         if not q: return 0
         if (self.password == q.password):
             if q.verified:
+                self.key = q.key
                 return 1
             else:
                 return -1
         else: return 0
 
 class UserCookieModel(ndb.Model):
-    username = ndb.StringProperty()
     token = ndb.StringProperty()
+
+"""Generate a random string for cookie validation"""
+def generate_cookie_token():
+    return generate_random_string(50)
+
+"""Save userid and the token for cookie validation to the cookie and database"""
+def save_cookie(handler, userkey):
+    token = generate_cookie_token()
+    cookie_value = userkey.urlsafe() + "|" + token
+    expire = datetime.now() + timedelta(days=30)
+    handler.response.set_cookie("_", cookie_value, expires = expire, httponly=True, overwrite=True)
+    q = ndb.Key("UserCookieModel", userkey.id()).get()
+    if not q:
+        model = UserCookieModel(id=userkey.id(), token=token)
+        model.put()
+    else:
+        q.token = token
+        q.put()
+
+"""A normal lightweight class, just to be used for the return of get_current_user"""
+class UserInfo:
+    def __init__(self, userid, username, email):
+        self.userid = userid
+        self.username = username
+        self.email = email
+
+"""Get the current logged in user"""
+def get_current_user(handler):
+    username = handler.session.get("username", None)
+    if username == None:
+        value = handler.request.cookies.get("_", None)
+        if value == None: return None
+        l = value.split("|")
+        key = l[0]
+        token = l[1]
+        userkey = ndb.Key(urlsafe=key)
+        userid = userkey.id()
+        q = ndb.Key("UserCookieModel", userid).get()
+        if (not q) or (q.token != token):
+            return None
+        else:
+            q = userkey.get()
+            handler.session["userid"] = userid
+            handler.session["username"] = q.username
+            handler.session["email"] = q.email
+            return UserInfo(userid, q.username, q.email)
+    else:
+        return UserInfo(handler.session.get("userid"), username, handler.session.get("email"))
