@@ -30,12 +30,19 @@ class AdminAddUserHandler(RequestHandler):
     def post(self):
         username = self.request.get("username")
         email = self.request.get("email")
-        model = UserModel(username=username, email=email, verified=False)
-        model.put()
-        user_confirm.send_confirmation_mail(self, username, email)
-        values = {
-                "message": _("An email has been sent to you that contains the link to activate your account, \
-                                check your mail box."),
-                "redirect": None,
-                }
-        self.response.out.write(self.render("noticepage", values))
+        model = UserModel(verified=False)
+        model.assign(self)
+        if model.validate():
+            model.put()
+            user_confirm.send_confirmation_mail(self, username, email)
+            values = {
+                    "message": _(u"An email has been sent to you that contains the link to activate your account, \
+                                    check your mail box."),
+                    "redirect": None,
+                    }
+            self.response.out.write(self.render("noticepage", values))
+        else:
+            values = {
+                    "model": model
+                    }
+            self.response.out.write(self.render("admin_user_add", values))

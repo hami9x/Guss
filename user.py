@@ -2,18 +2,30 @@ import hashlib
 from datetime import datetime, timedelta
 from google.appengine.ext import ndb
 from utils import generate_random_string
+from webapp2_extras.i18n import _lazy as _
+import model
 
-class UserModel(ndb.Model):
-    username = ndb.StringProperty()
-    password = ndb.StringProperty()
-    email = ndb.StringProperty()
+class UserModel(model.FormModel):
+    username = ndb.StringProperty(_("Username"))
+    password = ndb.StringProperty(_("Password"))
+    email = ndb.StringProperty(_("Email"))
     created = ndb.DateTimeProperty(auto_now_add=True)
     verified = ndb.BooleanProperty()
+    _password_confirm = ""
 
     def __init__(self, *args, **kwds):
         super(UserModel, self).__init__(*args, **kwds)
         if self.password != None:
             self.password = self.encrypt(self.password)
+
+    def _validation(self):
+        return [
+            ("username", "word"),
+            ("email", "email"),
+            ("password", "password"),
+            ("password", "min_length", 8),
+            ("_password_confirm", "equal", self.password),
+        ]
 
     @staticmethod
     def encrypt(str):

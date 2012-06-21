@@ -1,0 +1,10 @@
+{# display validation errors for a specified field #}
+{% macro v_e(model, field, field_rname) %}
+    {% set errors = model.get_errors() %}
+    {% if errors|length != 0 %}
+        {{ field_rname }}:
+        {% for msg in errors[field] %}
+                {{ msg }};
+        {% endfor %}
+    {% endif %}
+{% endmacro %}

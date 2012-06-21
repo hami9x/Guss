@@ -1,10 +1,20 @@
+{% import "form.html" as form %}
 <html>
     <body>
-        <h2>{{ gettext("Add user") }}</h2>
+        <h2>{{ _("Add user") }}</h2>
         <form method="post" action="">
-            {{ gettext("Username:") }} <input type="text" name="username"/>
-            {{ gettext("Email:") }} <input type="text" name="email"/>
-            <input type="submit" value="{{ gettext("Submit") }}"/>
+            {{ _("Username:") }} <input type="text" name="username"/>
+            {{ form.v_e(model, "username", _("Username")) }}
+            <br/>
+            {{ _("Email:") }} <input type="text" name="email"/>
+            {{ form.v_e(model, "email", _("Email")) }}
+            <br/>
+            {{ _("Password:") }} <input type="password" name="password"/>
+            {{ form.v_e(model, "password", _("Password")) }}
+            <br/>
+            {{ _("Confirm password:") }} <input type="password" name="_password_confirm"/>
+            {{ form.v_e(model, "_password_confirm", _("Confirm Password")) }}
+            <input type="submit" value="{{ _("Submit") }}"/>
         </form>
     </body>
 </html>
