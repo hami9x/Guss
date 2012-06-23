@@ -1,10 +1,20 @@
 {# display validation errors for a specified field #}
-{% macro v_e(model, field, field_rname) %}
+{% macro v_e(model, field) %}
     {% set errors = model.get_errors() %}
-    {% if errors|length != 0 %}
-        {{ field_rname }}:
+    <div class="form-error-message">
         {% for msg in errors[field] %}
                 {{ msg }};
         {% endfor %}
-    {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro form_field_label(model, field) %}
+    <label class="form-field-label" for="{{ field }}">{{ model.get_verbose_name(field) }}</label>
+{% endmacro %}
+
+{% macro form_input_field(model, field, type="text") %}
+    {{ form_field_label(model, field) }}:
+    <input type="{{ type }}" name="{{ field }}" class="form-input-field" {{ caller() }}/>
+    <br/>
+    {{ v_e(model, field) }}
 {% endmacro %}

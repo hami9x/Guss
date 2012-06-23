@@ -3,17 +3,10 @@
     <body>
         <h2>{{ _("Add user") }}</h2>
         <form method="post" action="">
-            {{ _("Username:") }} <input type="text" name="username"/>
-            {{ form.v_e(model, "username", _("Username")) }}
-            <br/>
-            {{ _("Email:") }} <input type="text" name="email"/>
-            {{ form.v_e(model, "email", _("Email")) }}
-            <br/>
-            {{ _("Password:") }} <input type="password" name="password"/>
-            {{ form.v_e(model, "password", _("Password")) }}
-            <br/>
-            {{ _("Confirm password:") }} <input type="password" name="_password_confirm"/>
-            {{ form.v_e(model, "_password_confirm", _("Confirm Password")) }}
+            {{ form_input_field(model, "username") }}
+            {{ form_input_field(model, "email") }}
+            {{ form_input_field(model, "password", "password") }}
+            {{ form_input_field(model, "_confirm_password", "password") }}
             <input type="submit" value="{{ _("Submit") }}"/>
         </form>
     </body>
