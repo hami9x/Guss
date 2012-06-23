@@ -6,12 +6,12 @@ from webapp2_extras.i18n import _lazy as _
 import model
 
 class UserModel(model.FormModel):
-    username = ndb.StringProperty(_("Username"))
-    password = ndb.StringProperty(_("Password"))
-    email = ndb.StringProperty(_("Email"))
+    username = ndb.StringProperty(verbose_name=_(u"Username"))
+    password = ndb.StringProperty(verbose_name=_(u"Password"))
+    email = ndb.StringProperty(verbose_name=_("uEmail"))
     created = ndb.DateTimeProperty(auto_now_add=True)
     verified = ndb.BooleanProperty()
-    _password_confirm = ""
+    _password_confirm = model.UnsavedProperty(verbose_name=_(u"Confirm password"))
 
     def __init__(self, *args, **kwds):
         super(UserModel, self).__init__(*args, **kwds)
@@ -24,7 +24,7 @@ class UserModel(model.FormModel):
             ("email", "email"),
             ("password", "password"),
             ("password", "min_length", 8),
-            ("_password_confirm", "equal", self.password),
+            ("_password_confirm", "confirm_password", self.password),
         ]
 
     @staticmethod

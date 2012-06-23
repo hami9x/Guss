@@ -24,10 +24,18 @@ validate_email = Validator(email_re, _(u"Please enter a valid email address"))
 password_re = r'^.*(?=.*[a-zA-Z])(?=.*\d).*$'
 validate_password = Validator(password_re, _(u"Must contain letters and digits"))
 
-def validate_min_length(value, length):
-    if len(value) < length:
-        raise ValidationError(_(u"Must contain at least %(length)d characters", length=length))
+class MinLengthValidator(Validator):
+    message = _(u"Must contain at least %(length)d characters")
+    def __call__(self, value, length):
+        if len(value) < length:
+            raise ValidationError(self.message % {"length": length})
+validate_min_length = MinLengthValidator()
 
-def validate_equal(value1, value2, name1, name2):
-    if value1 != value2:
-        raise ValidationError(_(u"%(n1)s and %(n2)s doesn't match", n1=name1, n2=name2))
+class TheSameValidator(Validator):
+    message = _(u"%(name1)s and %(name2)s must be the same")
+    def __call__(self, value1, value2, name1="", name2=""):
+        if value1 != value2:
+            raise ValidationError(self.message % {"name1": name1, "name2": name2})
+validate_the_same = TheSameValidator()
+
+validate_confirm_password = TheSameValidator(message=_(u"The passwords you entered do not match, please try again"))

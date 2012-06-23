@@ -22,3 +22,7 @@ class TestValidators(unittest.TestCase):
     def test_min_length(self):
         validators.validate_min_length("123456789", 8)
         self.assertRaises(VE, validators.validate_min_length, "1234567", 8)
+
+    def test_the_same(self):
+        validators.validate_the_same("aaaa", "aaaa")
+        self.assertRaises(VE, validators.validate_the_same, "kkkdf", "1111")
