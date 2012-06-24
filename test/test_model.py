@@ -6,6 +6,7 @@ class DummyModel(model.FormModel):
     a = ndb.StringProperty(verbose_name="AAAA")
     b = ndb.StringProperty()
     c = model.UnsavedProperty(verbose_name="This is a name")
+    d = ndb.StringProperty(repeated=True)
 
     def _validation(self):
         return [
@@ -22,7 +23,6 @@ class TestUnsavedProperty(unittest.TestCase):
         self.model.c = "a value"
         self.assertEqual(self.model.get_verbose_name("c"), "This is a name")
 
-
 class TestModel(unittest.TestCase):
     def setUp(self):
         self.model = DummyModel(a="****", b=".....")
@@ -38,3 +38,19 @@ class TestModel(unittest.TestCase):
         self.model = DummyModel(a="****", b=".....")
         self.assertEqual(self.model.get_verbose_name("a"), "AAAA")
 
+    def test_assign(self):
+        class DummyRequestHandler:
+            class Request:
+                class Post:
+                    def dict_of_lists(self):
+                        return {
+                                "a": ["aaa"],
+                                "d": ["b", "bb", "bbb"],
+                                }
+                POST = Post()
+            request = Request()
+
+        model = DummyModel()
+        model.assign(DummyRequestHandler())
+        self.assertEqual(model.a, "aaa")
+        self.assertEqual(model.d, ["b", "bb", "bbb"])

@@ -72,7 +72,7 @@ class FormModel(ndb.Model):
     def assign(self, rhandler):
         data = rhandler.request.POST.dict_of_lists()
         for field, vlist in data.iteritems():
-            if getattr(self, field, None) != None: #Model has the attribute named the same with the POST field name
+            if hasattr(self, field): #Model has the attribute named the same with the POST field name
                 setattr(self, field, vlist[0] if len(vlist)<2 else vlist)
 
     def get_verbose_name(self, attr):
