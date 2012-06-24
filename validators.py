@@ -16,8 +16,8 @@ class Validator:
             raise ValidationError(self.message)
 
 word_re = r'^\w+$'
-validate_word = Validator(word_re, _(u"Only alphanumeric letters (A-Z, a-z, 0-9) \
-            and understore (_) are allowed."))
+validate_word = Validator(word_re, _(u"Only alphanumeric letters (A-Z, a-z, 0-9)"
+            " and understore (_) are allowed."))
 
 validate_email = Validator(email_re, _(u"Please enter a valid email address"))
 

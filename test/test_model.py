@@ -24,15 +24,17 @@ class TestUnsavedProperty(unittest.TestCase):
 
 
 class TestModel(unittest.TestCase):
+    def setUp(self):
+        self.model = DummyModel(a="****", b=".....")
+        self.model2 = DummyModel(a="dkdkf", b="kdkkdf")
     def test_validation(self):
-        self.model = DummyModel(a = "****", b = ".....")
         self.assertEqual(self.model.validate(), False)
         self.assertEqual(len(self.model.get_errors()), 2)
 
-        self.model = DummyModel(a = "dkdkf", b = "kdkkdf")
-        self.assertEqual(self.model.validate(), True)
-        self.assertEqual(self.model.get_errors(), {})
+        self.assertEqual(self.model2.validate(), True)
+        self.assertEqual(self.model2.get_errors(), {})
 
     def test_verbose_name(self):
+        self.model = DummyModel(a="****", b=".....")
         self.assertEqual(self.model.get_verbose_name("a"), "AAAA")
 
