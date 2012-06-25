@@ -34,7 +34,10 @@ class ValidationEngine(object):
     the self.errors dictionary"""
     def validate(self, field, method, *args):
         field_value = getattr(self.model, field)
-        if field_value is not None:
+        #Do not perform validation if:
+        #  Field is None (not used in the form)
+        #  Field is left blank and this is not a "required" validation
+        if (field_value is not None) and ((method == "required") or (field_value != "")):
             try:
                 getattr(validators, "validate_"+method)(field_value, *args)
             except validators.ValidationError as e:
@@ -64,9 +67,10 @@ class FormModel(ndb.Model):
         pass
 
     def validate(self):
-        v_list = self._validation()
-        for item in v_list:
-            self.validations.validate(*item)
+        field_dict = self._validation()
+        for field, v_dict in field_dict.iteritems():
+            for method, params in v_dict.iteritems():
+                self.validations.validate(field, method, *params)
         self._validated = True
         return not self.validations.has_error()
 
@@ -83,3 +87,9 @@ class FormModel(ndb.Model):
             return self._unsaved_properties[attr]._verbose_name
         else:
             raise AttributeError("FormModel instance has no attribute %s" % attr)
+
+    def is_required(self, field):
+        v_dict = self._validation()
+        if (field in v_dict) and ("required" in v_dict[field]):
+            return True
+        else: return False

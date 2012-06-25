@@ -19,15 +19,12 @@ class UserModel(model.FormModel):
             self.password = self.encrypt(self.password)
 
     def _validation(self):
-        return [
-            ("username", "required"),
-            ("username", "word"),
-            ("email", "required"),
-            ("email", "email"),
-            ("password", "password"),
-            ("password", "min_length", 8),
-            ("_password_confirm", "confirm_password", self.password),
-        ]
+        return {
+                "username": {"required": (), "word": ()},
+                "email": {"required": (), "email": ()},
+                "password": {"required": (), "password": (), "min_length": (8,)},
+                "_password_confirm": {"required": (), "confirm_password": (self.password,)},
+                }
 
     @staticmethod
     def encrypt(str):

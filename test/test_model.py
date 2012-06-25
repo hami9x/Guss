@@ -9,10 +9,10 @@ class DummyModel(model.FormModel):
     d = ndb.StringProperty(repeated=True)
 
     def _validation(self):
-        return [
-                ("a", "word"),
-                ("b", "word")
-                ]
+        return {
+                "a": {"required": (), "word": ()},
+                "b": {"word": ()},
+                }
 
 class TestUnsavedProperty(unittest.TestCase):
     def setUp(self):
@@ -54,3 +54,7 @@ class TestModel(unittest.TestCase):
         model.assign(DummyRequestHandler())
         self.assertEqual(model.a, "aaa")
         self.assertEqual(model.d, ["b", "bb", "bbb"])
+
+    def test_is_required(self):
+        self.assertEqual(self.model.is_required("a"), True)
+        self.assertEqual(self.model.is_required("b"), False)

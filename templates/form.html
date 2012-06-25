@@ -22,6 +22,7 @@
             {%- else %}{% endif %}"
         {% if caller is defined %} {{ caller() }} {% endif %}
     />
+    {%- if not model.is_required(field) %} {{ _("(Optional)") }} {% endif -%}
     <br/>
     {{ v_e(model, field) }}
 {% endmacro %}

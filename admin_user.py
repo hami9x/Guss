@@ -33,8 +33,6 @@ class AdminAddUserHandler(RequestHandler):
         email = self.request.get("email")
         model = UserModel(verified=False)
         model.assign(self)
-        import logging
-        logging.info(model.username)
         if model.validate():
             model.put()
             user_confirm.send_confirmation_mail(username, email)

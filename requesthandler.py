@@ -4,23 +4,29 @@ from webapp2_extras import i18n, sessions
 import jinja2
 import user
 import config
-import model
+
+class JinjaEnv(jinja2.Environment):
+    def __init__(self):
+        super(JinjaEnv, self).__init__(
+            extensions=['jinja2.ext.i18n'],
+            loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates"))
+            )
+        self.install_gettext_translations(i18n, newstyle=True)
+        self.globals["getattr"] = getattr
+
+    def render(self, name, values={}):
+        return self.get_template(name+".html").render(values)
 
 class RequestHandler(webapp2.RequestHandler):
-    jinjaEnv = jinja2.Environment(extensions=['jinja2.ext.i18n'],
-            loader = jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")))
-
     def __init__(self, *args, **kwds):
-        self.jinjaEnv.globals["model"] = model.FormModel()
-        self.jinjaEnv.globals["getattr"] = getattr
-        self.jinjaEnv.install_gettext_translations(i18n, newstyle=True)
+        self.template = JinjaEnv()
         webapp2.RequestHandler.__init__(self, *args, **kwds)
 
     def get_config(self, key): config.get_config(key)
     def update_config(self, *args, **kwds): config.update_config(*args, **kwds)
 
-    def render(self, name, values={}):
-        return self.jinjaEnv.get_template(name+".html").render(values)
+    def render(self, *args, **kwds):
+        return self.template.render(*args, **kwds)
 
     def dispatch(self):
         # Get a session store for this request.
