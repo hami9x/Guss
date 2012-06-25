@@ -34,12 +34,13 @@ class ValidationEngine(object):
     the self.errors dictionary"""
     def validate(self, field, method, *args):
         field_value = getattr(self.model, field)
-        try:
-            getattr(validators, "validate_"+method)(field_value, *args)
-        except validators.ValidationError as e:
-            if not(field in self.errors):
-                self.errors[field] = []
-            self.errors[field].append(e.message)
+        if field_value is not None:
+            try:
+                getattr(validators, "validate_"+method)(field_value, *args)
+            except validators.ValidationError as e:
+                if not(field in self.errors):
+                    self.errors[field] = []
+                self.errors[field].append(e.message)
 
     def has_error(self):
         return bool(self.errors)

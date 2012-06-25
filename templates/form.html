@@ -1,20 +1,27 @@
 {# display validation errors for a specified field #}
 {% macro v_e(model, field) %}
-    {% set errors = model.get_errors() %}
     <div class="form-error-message">
+    {% set errors = model.get_errors() %}
+    {% if field in errors %}
         {% for msg in errors[field] %}
                 {{ msg }};
         {% endfor %}
+    {% endif %}
     </div>
 {% endmacro %}
 
-{% macro form_field_label(model, field) %}
+{% macro field_label(model, field) %}
     <label class="form-field-label" for="{{ field }}">{{ model.get_verbose_name(field) }}</label>
 {% endmacro %}
 
-{% macro form_input_field(model, field, type="text") %}
-    {{ form_field_label(model, field) }}:
-    <input type="{{ type }}" name="{{ field }}" class="form-input-field" {{ caller() }}/>
+{% macro input_field(model, field, type="text") %}
+    {{ field_label(model, field) }}:
+    <input type="{{ type }}" name="{{ field }}" class="form-input-field"
+    value= "{% if (type!="password") and (getattr(model, field) != None) -%}
+                    {{ getattr(model, field) }}
+            {%- else %}{% endif %}"
+        {% if caller is defined %} {{ caller() }} {% endif %}
+    />
     <br/>
     {{ v_e(model, field) }}
 {% endmacro %}

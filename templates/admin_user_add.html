@@ -3,10 +3,10 @@
     <body>
         <h2>{{ _("Add user") }}</h2>
         <form method="post" action="">
-            {{ form_input_field(model, "username") }}
-            {{ form_input_field(model, "email") }}
-            {{ form_input_field(model, "password", "password") }}
-            {{ form_input_field(model, "_confirm_password", "password") }}
+            {{ form.input_field(model, "username") }}
+            {{ form.input_field(model, "email") }}
+            {{ form.input_field(model, "password", "password") }}
+            {{ form.input_field(model, "_password_confirm", "password") }}
             <input type="submit" value="{{ _("Submit") }}"/>
         </form>
     </body>

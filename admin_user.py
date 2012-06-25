@@ -25,16 +25,19 @@ class AdminUserHandler(RequestHandler):
 
 class AdminAddUserHandler(RequestHandler):
     def get(self):
-        self.response.out.write(self.render("admin_user_add"))
+        model = UserModel()
+        self.response.out.write(self.render("admin_user_add", {"model": model}))
 
     def post(self):
         username = self.request.get("username")
         email = self.request.get("email")
         model = UserModel(verified=False)
         model.assign(self)
+        import logging
+        logging.info(model.username)
         if model.validate():
             model.put()
-            user_confirm.send_confirmation_mail(self, username, email)
+            user_confirm.send_confirmation_mail(username, email)
             values = {
                     "message": _(u"An email has been sent to you that contains the link to activate your account, \
                                     check your mail box."),

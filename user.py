@@ -8,7 +8,7 @@ import model
 class UserModel(model.FormModel):
     username = ndb.StringProperty(verbose_name=_(u"Username"))
     password = ndb.StringProperty(verbose_name=_(u"Password"))
-    email = ndb.StringProperty(verbose_name=_("uEmail"))
+    email = ndb.StringProperty(verbose_name=_(u"Email"))
     created = ndb.DateTimeProperty(auto_now_add=True)
     verified = ndb.BooleanProperty()
     _password_confirm = model.UnsavedProperty(verbose_name=_(u"Confirm password"))
@@ -20,7 +20,9 @@ class UserModel(model.FormModel):
 
     def _validation(self):
         return [
+            ("username", "required"),
             ("username", "word"),
+            ("email", "required"),
             ("email", "email"),
             ("password", "password"),
             ("password", "min_length", 8),

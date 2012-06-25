@@ -12,6 +12,7 @@ class RequestHandler(webapp2.RequestHandler):
 
     def __init__(self, *args, **kwds):
         self.jinjaEnv.globals["model"] = model.FormModel()
+        self.jinjaEnv.globals["getattr"] = getattr
         self.jinjaEnv.install_gettext_translations(i18n, newstyle=True)
         webapp2.RequestHandler.__init__(self, *args, **kwds)
 
