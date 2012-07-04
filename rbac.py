@@ -31,11 +31,12 @@ def register_permission(perm_id, desc):
         model.put()
 
 def register_role(name, parents=[]):
-    """Make sure that the parents are all valid
+    """Create a new role
     Args:
       name: A human-readable name for the role
       parents: A list of keys of the roles to be used as this role's parent
     """
+    #Make sure that the parents are all valid
     for parent_key in parents:
         if parent_key.get() == None:
             raise Exception(u'The parent role with id "%s" does not exist.' % parent_key.id())
