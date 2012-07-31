@@ -67,8 +67,8 @@ def save_cookie(handler, userkey):
 
 """A normal lightweight class, just to be used for the return of get_current_user"""
 class UserInfo:
-    def __init__(self, userid, username, email):
-        self.userid = userid
+    def __init__(self, userkey, username, email):
+        self.key = ndb.Key(urlsafe=userkey)
         self.username = username
         self.email = email
 
@@ -88,9 +88,9 @@ def get_current_user(handler):
             return None
         else:
             q = userkey.get()
-            handler.session["userid"] = userid
+            handler.session["userkey"] = key
             handler.session["username"] = q.username
             handler.session["email"] = q.email
-            return UserInfo(userid, q.username, q.email)
+            return UserInfo(key, q.username, q.email)
     else:
-        return UserInfo(handler.session.get("userid"), username, handler.session.get("email"))
+        return UserInfo(handler.session.get("userkey"), username, handler.session.get("email"))

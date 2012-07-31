@@ -3,7 +3,7 @@ import config
 
 tempconfig = {}
 tempconfig["webapp2_extras.sessions"] = {
-            "secret_key": config.get_config("session_secret_key")
+            "secret_key": config.get_config("session_secret_key").encode("ascii", "ignore")
             }
 
 app = webapp2.WSGIApplication([

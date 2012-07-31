@@ -4,6 +4,8 @@ from webapp2_extras import i18n, sessions
 import jinja2
 import user
 import config
+import rbac
+import inspect
 
 class JinjaEnv(jinja2.Environment):
     def __init__(self):
@@ -19,14 +21,14 @@ class JinjaEnv(jinja2.Environment):
 
 class RequestHandler(webapp2.RequestHandler):
     def __init__(self, *args, **kwds):
-        self.template = JinjaEnv()
+        self._template = JinjaEnv()
         webapp2.RequestHandler.__init__(self, *args, **kwds)
 
     def get_config(self, key): config.get_config(key)
     def update_config(self, *args, **kwds): config.update_config(*args, **kwds)
 
     def render(self, *args, **kwds):
-        return self.template.render(*args, **kwds)
+        return self._template.render(*args, **kwds)
 
     def dispatch(self):
         # Get a session store for this request.
@@ -44,6 +46,63 @@ class RequestHandler(webapp2.RequestHandler):
         # Returns a session using the default cookie key.
         return self.session_store.get_session()
 
-    #Map the function in user module to this class for convenience
     def get_current_user(self):
-        return user.get_current_user(self)
+        """Get the current user"""
+        try:
+            _ = self._current_user
+        except AttributeError:
+            self._current_user = user.get_current_user(self)
+        return self._current_user
+
+    def _get(self):
+        """To be overridden"""
+        pass
+
+    def _post(self):
+        """To be overridden"""
+        pass
+
+    def _check_permission(self):
+        """To be overridden. This method performs the specific permission checking of a child class.
+        Must return True or False."""
+        return True
+
+    def get(self, *args, **kwds):
+        self.check_permission(self._get)
+
+    def post(self, *args, **kwds):
+        self.check_permission(self._post)
+
+    def _check_permission_hierarchy(self):
+        """Check permission of the object and all its ancestors.
+        To allow the access, all permission requirements of the object's ascendants must be fulfilled.
+        """
+        hierarchy = inspect.getmro(type(self))
+        for cls in hierarchy:
+            try:
+                if cls._check_permission(self) == False:
+                    return False
+            except AttributeError:
+                pass
+        return True
+
+
+    def check_permission(self, fn):
+        """Performs page-level permission checking."""
+        if self._check_permission_hierarchy():
+            fn()
+        else:
+            values = {
+                    "message": u"You are not allowed to access this page.",
+                    "redirect": None,
+                    }
+            self.response.out.write(self.render("noticepage", values))
+
+    def current_user_check_permission(self, perms):
+        if self.get_current_user() == None:
+            return rbac.check_permission_role(rbac.default_role("guest"), perms)
+        else:
+            return rbac.check_permission(self.get_current_user().key, perms)
+
+    def rbac_check_permission(self, user, perms):
+        return rbac.check_permission(user, perms)

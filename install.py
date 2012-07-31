@@ -2,22 +2,34 @@ import webapp2
 from user import UserModel
 import utils
 import config
+import rbac_setup
+
+def install_rbac():
+    rbac_setup.register_permissions()
+    rbac_setup.install_rbac_default()
+
+def perform_installation(*args, **kwds):
+    q = UserModel.query(UserModel.username=="admin").get()
+    if not q:
+        model = UserModel(username="admin", password="admin", email="admin@gmail.com", verified=True)
+        model.put()
+
+    #Configurations
+    conf = [
+            ("site_name", "Name", True),
+            ("session_secret_key", utils.generate_random_string(30), False),
+            ("admin_email", "admin@gmail.com", True)
+        ]
+    for item in conf:
+        config.update_config(item[0], item[1], item[2])
+
+    #Set up Role-based Access Control
+    install_rbac();
 
 class InstallHandler(webapp2.RequestHandler):
     def get(self):
-        q = UserModel.query(UserModel.username=="admin").get()
-        if not q:
-            model = UserModel(username="admin", password="admin", email="admin@gmail.com", verified=True)
-            model.put()
-
-        conf = [
-                ("site_name", "Name", True),
-                ("session_secret_key", utils.generate_random_string(30), False),
-                ("admin_email", "admin@gmail.com", True)
-            ]
-        for item in conf:
-            config.update_config(item[0], item[1], item[2])
-
+        perform_installation();
         self.response.out.write("<html><body>Install successful.</body></html>")
+
 
 app = webapp2.WSGIApplication([("/install", InstallHandler)], debug=True)

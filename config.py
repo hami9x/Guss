@@ -29,4 +29,3 @@ class ConfigModel(ndb.Model):
     name = ndb.StringProperty()
     value = ndb.StringProperty()
     visible = ndb.BooleanProperty()
-

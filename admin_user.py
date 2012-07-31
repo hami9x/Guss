@@ -1,14 +1,14 @@
 from google.appengine.ext import ndb
 from webapp2_extras.i18n import _
-from requesthandler import RequestHandler
 from user import UserModel
 import user_confirm
+import admin
 
 #User management page
-class AdminUserHandler(RequestHandler):
+class AdminUserHandler(admin.AdminRequestHandler):
     DEFAULT_LIMIT = 20
     DEFAULT_ORDER = "created"
-    def get(self):
+    def _get(self):
         try:
             limit = int(self.request.get("limit", self.DEFAULT_LIMIT))
         except ValueError:
@@ -23,12 +23,12 @@ class AdminUserHandler(RequestHandler):
                 }
         self.response.out.write(self.render("admin_user", values))
 
-class AdminAddUserHandler(RequestHandler):
-    def get(self):
+class AdminAddUserHandler(admin.AdminRequestHandler):
+    def _get(self):
         model = UserModel()
         self.response.out.write(self.render("admin_user_add", {"model": model}))
 
-    def post(self):
+    def _post(self):
         username = self.request.get("username")
         email = self.request.get("email")
         model = UserModel(verified=False)

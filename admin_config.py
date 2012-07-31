@@ -1,18 +1,21 @@
-from requesthandler import RequestHandler
 from config import update_config_cache, ConfigModel
+import admin
 
-class AdminConfigHandler(RequestHandler):
+class AdminConfigHandler(admin.AdminRequestHandler):
+    def _check_permission(self):
+        return self.current_user_check_permission("config")
+
     def get_all_visible_config(self):
         return ConfigModel.query(ConfigModel.visible==True).order(ConfigModel.name)
 
-    def get(self):
+    def _get(self):
         q = self.get_all_visible_config()
         values = {
                 "configs": q
                 }
         self.response.out.write(self.render("admin_config", values))
 
-    def post(self):
+    def _post(self):
         q = self.get_all_visible_config()
         for conf in q:
             new_value = self.request.get(conf.name, "")

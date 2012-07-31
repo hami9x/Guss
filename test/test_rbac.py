@@ -1,6 +1,6 @@
 import unittest
 from google.appengine.ext import testbed
-from guss import rbac, user
+from guss import rbac, user, install
 
 #Role-based access control test case
 class TestRBAC(unittest.TestCase):
@@ -8,6 +8,7 @@ class TestRBAC(unittest.TestCase):
         self.testbed = testbed.Testbed()
         self.testbed.activate()
         self.testbed.init_datastore_v3_stub()
+        install.install_rbac();
         self.user = user.UserModel(username="idiot", email="genius@gmail.com")
         self.user_key = self.user.put()
 
@@ -22,6 +23,20 @@ class TestRBAC(unittest.TestCase):
         self.assertEqual(rbac.check_permission(self.user_key, "access_acp"), True)
         self.assertEqual(rbac.check_permission(self.user_key, "another_perm"), False)
         self.assertRaises(Exception, rbac.check_permission, self.user_key, "__DF_incorrect_perm___")
-        #Now test to see if inheritance works
+        #Now check the check_permission of multiple perms
+        rbac.register_permission("troll", "Troll")
+        rbac.allow(role_key, "troll")
+        self.assertEqual(rbac.check_permission(self.user_key, ["troll", "access_acp"]), True)
+        self.assertEqual(rbac.check_permission(self.user_key, ["access_acp", "another_perm"]), False)
+
+        #Now test inheritance
         rbac.allow(parent_role_key, "another_perm")
         self.assertEqual(rbac.check_permission(self.user_key, "another_perm"), True)
+
+        #Test the special Super Admin role
+        super_admin = rbac.default_role("super_admin")
+        self.assertEqual(super_admin.id(), "super_admin")
+        new_user = user.UserModel(username="genius", email="idiot@gmail.com").put()
+        rbac.add_role(new_user, super_admin)
+        self.assertEqual(rbac.check_permission(self.user_key, "access_acp"), True)
+        self.assertEqual(rbac.check_permission(new_user, "another_perm"), True)
