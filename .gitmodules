@@ -1,8 +1,8 @@
 [submodule "babel"]
 	path = babel
-	url = ./babel
+	url = https://github.com/phaikawl-submodule-repos/babel.git
     ignore = dirty
 [submodule "pytz"]
     path = pytz
-	url = ./pytz
+	url = https://github.com/phaikawl-submodule-repos/pytz.git
     ignore = dirty
