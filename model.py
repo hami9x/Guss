@@ -48,7 +48,6 @@ class ValidationEngine(object):
     def has_error(self):
         return bool(self.errors)
 
-
 class FormModel(ndb.Model):
     __metaclass__ = MyMetaModel
     _validated = False
@@ -62,17 +61,34 @@ class FormModel(ndb.Model):
             self.validate()
         return self.validations.errors
 
-    """This method is for child classes to derive and define the validations"""
     def _validation(self):
-        pass
+        """This method is for child classes to override and define the validations"""
+        return {}
 
     def validate(self):
         field_dict = self._validation()
         for field, v_dict in field_dict.iteritems():
             for method, params in v_dict.iteritems():
+                if not isinstance(params, tuple):
+                    raise Exception("Validation parameters must be a python tuple, check your model's _validation() method")
                 self.validations.validate(field, method, *params)
         self._validated = True
         return not self.validations.has_error()
+
+    def put(self):
+        if not self._validated:
+            self.validate()
+        if self.get_errors():
+            raise Exception("Cannot save to the database because there are validation errors.")
+        return super(FormModel, self).put()
+
+    def _put(self):
+        """Bypass form validation and save directly to the database
+        ONLY USED FOR UNIT TESTS, DON'T EVER USE THIS METHOD FOR ANYTHING ELSE!
+        """
+        if not self._validated:
+            self.validate() #Just "pretend" to validate, so that the tests would catch some bugs in validation
+        return super(FormModel, self).put() #this line is executed, no matter the validation is ok or not
 
     def assign(self, rhandler):
         data = rhandler.request.POST.dict_of_lists()

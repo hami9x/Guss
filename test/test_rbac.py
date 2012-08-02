@@ -10,7 +10,7 @@ class TestRBAC(unittest.TestCase):
         self.testbed.init_datastore_v3_stub()
         install.install_rbac();
         self.user = user.UserModel(username="idiot", email="genius@gmail.com")
-        self.user_key = self.user.put()
+        self.user_key = self.user._put()
 
     def test_everything(self):
         parent_role_key = rbac.register_role("Employee")
@@ -36,7 +36,7 @@ class TestRBAC(unittest.TestCase):
         #Test the special Super Admin role
         super_admin = rbac.default_role("super_admin")
         self.assertEqual(super_admin.id(), "super_admin")
-        new_user = user.UserModel(username="genius", email="idiot@gmail.com").put()
+        new_user = user.UserModel(username="genius", email="idiot@gmail.com")._put()
         rbac.add_role(new_user, super_admin)
         self.assertEqual(rbac.check_permission(self.user_key, "access_acp"), True)
         self.assertEqual(rbac.check_permission(new_user, "another_perm"), True)
