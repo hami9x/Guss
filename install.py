@@ -2,6 +2,7 @@ import webapp2
 from user import UserModel
 import utils
 import config
+import rbac
 import rbac_setup
 
 def install_rbac():
@@ -13,6 +14,7 @@ def perform_installation(*args, **kwds):
     if not q:
         model = UserModel(username="admin", password="admin", email="admin@gmail.com", verified=True)
         model.put()
+    rbac.add_role(q.key, rbac.default_role("super_admin"))
 
     #Configurations
     conf = [
