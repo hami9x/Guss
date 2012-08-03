@@ -20,8 +20,8 @@ class UserModel(model.FormModel):
 
     def _validation(self):
         return {
-                "username": {"required": (), "word": ()},
-                "email": {"required": (), "email": ()},
+                "username": {"required": (), "word": (), "unique": ()},
+                "email": {"required": (), "email": (), "unique": ()},
                 "password": {"required": (), "password": (), "min_length": (8,)},
                 "_password_confirm": {"required": (), "confirm_password": (self.password,)},
                 }

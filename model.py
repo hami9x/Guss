@@ -33,6 +33,8 @@ class ValidationEngine(object):
     """Validate a form field with the validators in the validators module, errors are saved into
     the self.errors dictionary"""
     def validate(self, field, method, *args):
+        validators.CommonData.model = self.model
+        validators.CommonData.field = field
         field_value = getattr(self.model, field)
         #Do not perform validation if:
         #  Field is None (not used in the form)
