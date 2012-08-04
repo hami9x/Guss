@@ -1,12 +1,12 @@
 <html>
 <body>
     <form method="post" action="">
-        {{gettext("Username:")}} <input type="text" name="username"/>
-        <br/>
-        {{gettext("Password:")}} <input type="password" name="password"/>
-        <br/>
-        <input type="hidden" name="referer" value="{{referer}}">
-        <input type="submit" value="{{gettext("Submit")}}"/>
+        <ul>
+            <li>{{gettext("Username:")}} <input type="text" name="username"/></li>
+            <li>{{gettext("Password:")}} <input type="password" name="password"/></li>
+            <li><input type="hidden" name="referer" value="{{referer}}"></li>
+            <li><input type="submit" value="{{gettext("Submit")}}"/></li>
+        </ul>
     </form>
 </body>
 </html>

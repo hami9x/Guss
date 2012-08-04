@@ -14,15 +14,30 @@
     <label class="form-field-label" for="{{ field }}">{{ model.get_verbose_name(field) }}</label>
 {% endmacro %}
 
-{% macro input_field(model, field, type="text") %}
-    {{ field_label(model, field) }}:
+{% macro input(model, field, type="text") %}
     <input type="{{ type }}" name="{{ field }}" class="form-input-field"
     value= "{% if (type!="password") and (getattr(model, field) != None) -%}
                     {{ getattr(model, field) }}
-            {%- else %}{% endif %}"
-        {% if caller is defined %} {{ caller() }} {% endif %}
+            {%- else %}{% endif -%}"
+            {{ caller() }}
     />
     {%- if not model.is_required(field) %} {{ _("(Optional)") }} {% endif -%}
-    <br/>
+{% endmacro %}
+
+{% macro input_field(model, field, type="text") %}
+    {{ field_label(model, field) }}:
+    {% call input(model, field, type) %}
+        {% if caller is defined %} {{ caller() }} {% endif %}
+    {% endcall %}
     {{ v_e(model, field) }}
+{% endmacro %}
+
+{% macro textarea_field(model, field) %}
+    {{ field_label(model, field) }}:
+    <textarea name="{{ field }}">{{ getattr(model, field) }}</textarea>
+    {{ v_e(model, field) }}
+{% endmacro %}
+
+{% macro submit(value=_("Submit")) %}
+    <input type="submit" value="{{ value }}"/>
 {% endmacro %}

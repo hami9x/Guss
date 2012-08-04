@@ -6,3 +6,7 @@
     path = pytz
 	url = https://github.com/phaikawl-submodule-repos/pytz.git
     ignore = dirty
+[submodule "unidecode"]
+	path = unidecode
+	url = https://github.com/phaikawl-submodule-repos/unidecode.git
+    ignore = dirty
