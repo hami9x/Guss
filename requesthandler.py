@@ -1,6 +1,7 @@
 import os
 import webapp2
 from webapp2_extras import i18n, sessions
+from webapp2_extras.i18n import _lazy as _
 import jinja2
 import user
 import config
@@ -21,6 +22,7 @@ class JinjaEnv(jinja2.Environment):
 
 class RequestHandler(webapp2.RequestHandler):
     def __init__(self, *args, **kwds):
+        self._stop = False
         self._template = JinjaEnv()
         webapp2.RequestHandler.__init__(self, *args, **kwds)
 
@@ -49,10 +51,13 @@ class RequestHandler(webapp2.RequestHandler):
     def get_current_user(self):
         """Get the current user"""
         try:
-            _ = self._current_user
+            _gabage = self._current_user
         except AttributeError:
             self._current_user = user.get_current_user(self)
         return self._current_user
+
+    def logged_in(self):
+        return self.get_current_user() != None
 
     def _get(self):
         """To be overridden"""
@@ -67,10 +72,16 @@ class RequestHandler(webapp2.RequestHandler):
         Must return True or False."""
         return True
 
+    def _handler_init(self, *args, **kwds):
+        """To be overridden. This method performs the initialization that runs at the beginning of post() or get()"""
+        pass
+
     def get(self, *args, **kwds):
+        self._handler_init(*args, **kwds)
         self.check_permission(self._get)
 
     def post(self, *args, **kwds):
+        self._handler_init(*args, **kwds)
         self.check_permission(self._post)
 
     def _check_permission_hierarchy(self):
@@ -90,10 +101,10 @@ class RequestHandler(webapp2.RequestHandler):
     def check_permission(self, fn):
         """Performs page-level permission checking."""
         if self._check_permission_hierarchy():
-            fn()
+            if not self._stop: fn()
         else:
             values = {
-                    "message": u"You are not allowed to access this page.",
+                    "message": _(u"You are not allowed to access this page."),
                     "redirect": None,
                     }
             self.response.out.write(self.render("noticepage", values))
@@ -106,3 +117,6 @@ class RequestHandler(webapp2.RequestHandler):
 
     def rbac_check_permission(self, user, perms):
         return rbac.check_permission(user, perms)
+
+    def stop(self):
+        self._stop = True

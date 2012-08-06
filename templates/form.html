@@ -38,6 +38,7 @@
     {{ v_e(model, field) }}
 {% endmacro %}
 
-{% macro submit(value=_("Submit")) %}
+{% macro submit(value="Submit") %}
+    {% set value= _(value) %}
     <input type="submit" value="{{ value }}"/>
 {% endmacro %}

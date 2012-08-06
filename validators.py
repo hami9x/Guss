@@ -41,6 +41,15 @@ class MinLengthValidator(Validator):
             raise ValidationError(self.message() % {"length": length})
 validate_min_length = MinLengthValidator()
 
+class MaxLengthValidator(Validator):
+    def message(self):
+        return _(u"Cannot contain more than %(length)d characters")
+
+    def __call__(self, value, length):
+        if len(value) > length:
+            raise ValidationError(self.message() % {"length": length})
+validate_max_length = MaxLengthValidator()
+
 class TheSameValidator(Validator):
     def message(self):
         return _(u"%(name1)s and %(name2)s must be the same")

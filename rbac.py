@@ -20,13 +20,14 @@ class PermissionAssignmentModel(ndb.Model):
     role_key = ndb.KeyProperty()
     perm_id = ndb.StringProperty()
 
-def default_role(string_id, name=None):
+def default_role(string_id, name=None, parents=[]):
     """Helper for creating a new and/or getting an existing role that has a string id"""
+    _roles_valid(parents)
     q = RoleModel.get_by_id(string_id)
     if q == None:
         if name==None: raise Exception(u"""The role does not exist. You must provide a "name" argument if you wanna create the role."""
                 """\nHave you installed the RBAC system?""")
-        return RoleModel(id=string_id, name=name).put()
+        return RoleModel(id=string_id, name=name, parents=parents).put()
     return q.key
 
 def register_permission(perm_id, desc):
@@ -39,6 +40,14 @@ def register_permission(perm_id, desc):
         model = PermissionModel(id=perm_id, desc=desc)
         model.put()
 
+def _roles_valid(roles):
+    """Internal helper."""
+    for role_key in roles:
+        if role_key.get() == None:
+            raise Exception(u'The role with id "%s" does not exist.' % role_key.id())
+            return False
+    return True
+
 def register_role(name, parents=[]):
     """Create a new role
     Args:
@@ -46,9 +55,7 @@ def register_role(name, parents=[]):
       parents: A list of keys of the roles to be used as this role's parent
     """
     #Make sure that the parents are all valid
-    for parent_key in parents:
-        if parent_key.get() == None:
-            raise Exception(u'The parent role with id "%s" does not exist.' % parent_key.id())
+    _roles_valid(parents)
     return RoleModel(name=name, parents=parents).put()
 
 def add_role(user_key, role_key):
