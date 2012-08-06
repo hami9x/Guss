@@ -76,13 +76,15 @@ class RequestHandler(webapp2.RequestHandler):
         """To be overridden. This method performs the initialization that runs at the beginning of post() or get()"""
         pass
 
-    def get(self, *args, **kwds):
+    def _handler_method_run(self, fn, *args, **kwds):
         self._handler_init(*args, **kwds)
-        self.check_permission(self._get)
+        if not self._stop: fn()
+
+    def get(self, *args, **kwds):
+        self.check_permission(self._get, *args, **kwds)
 
     def post(self, *args, **kwds):
-        self._handler_init(*args, **kwds)
-        self.check_permission(self._post)
+        self.check_permission(self._post, *args, **kwds)
 
     def _check_permission_hierarchy(self):
         """Check permission of the object and all its ancestors.
@@ -98,10 +100,10 @@ class RequestHandler(webapp2.RequestHandler):
         return True
 
 
-    def check_permission(self, fn):
+    def check_permission(self, fn, *args, **kwds):
         """Performs page-level permission checking."""
         if self._check_permission_hierarchy():
-            if not self._stop: fn()
+            self._handler_method_run(fn, *args, **kwds)
         else:
             values = {
                     "message": _(u"You are not allowed to access this page."),

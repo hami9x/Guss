@@ -15,8 +15,6 @@ class UserModel(model.FormModel):
 
     def __init__(self, *args, **kwds):
         super(UserModel, self).__init__(*args, **kwds)
-        if self.password != None:
-            self.password = self.encrypt(self.password)
 
     def _validation(self):
         return {
@@ -32,11 +30,18 @@ class UserModel(model.FormModel):
         m.update(str)
         return m.hexdigest()
 
+    def put(self, *args, **kwds):
+        _password = self.password
+        self.password = self.encrypt(self.password)
+        ret = super(UserModel, self).put(*args, **kwds)
+        self.password = _password
+        return ret
+
     def login(self):
         q = ndb.gql("SELECT password, verified FROM UserModel WHERE username = :1",
                     self.username).get()
         if not q: return 0
-        if (self.password == q.password):
+        if (self.encrypt(self.password) == q.password):
             if q.verified:
                 self.key = q.key
                 return 1

@@ -1,7 +1,6 @@
 from webapp2_extras.i18n import _
 from requesthandler import RequestHandler
 from blog import BlogModel
-import utils
 
 class BlogEditHandler(RequestHandler):
     def __init__(self, *args, **kwds):
@@ -53,11 +52,8 @@ class BlogEditHandler(RequestHandler):
         blog.assign(self)
         if blog.validate():
             if not blog.slug:
-                blog.slug = utils.slugify(blog.title)
-                count = BlogModel.query(BlogModel.slug == blog.slug).count()
-                if count > 0:
-                    blog.slug += "-%d" % (count+1)
-            blog.put()
+                blog.make_slug()
+                blog.put()
 
         values = {
                 "model": blog,

@@ -1,6 +1,7 @@
 from google.appengine.ext import ndb
 from webapp2_extras.i18n import _lazy as _
 import model
+import utils
 
 class BlogModel(model.FormModel):
     author = ndb.KeyProperty()
@@ -16,3 +17,9 @@ class BlogModel(model.FormModel):
                     "required": (),
                     },
                 }
+
+    def make_slug(self):
+        self.slug = utils.slugify(self.title)
+        count = BlogModel.query(BlogModel.slug == self.slug).count()
+        if count > 0:
+            self.slug += "-%d" % (count+1)

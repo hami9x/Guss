@@ -10,10 +10,10 @@ class TestUser(unittest.TestCase):
         self.testbed.activate()
         self.testbed.init_datastore_v3_stub()
         model = user.UserModel(username="testguy", password="testpass", email="testemail@gmail.com", verified=True)
-        self.testguy_key = model._put();
+        self.testguy_key = model.put();
         model = user.UserModel(username="unverifiedguy", password="testpass2",
                                     email="unverifiedguy@gmail.com", verified=False)
-        model._put();
+        model.put();
 
     def test_login(self):
         self.assertEqual(0, user.UserModel(username="testguy", password="wrongpass").login())

@@ -15,7 +15,7 @@ class LoginHandler(RequestHandler):
             render_notice(values)
         elif successful == "0":
             values = {
-                    "message": _("Login failed, user doesn't exists, you could try again."),
+                    "message": _("Login failed, invalid password or user doesn't exist, you could try again."),
                     "redirect": self.uri_for("login"),
                     }
             render_notice(values)
