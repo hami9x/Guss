@@ -1,4 +1,3 @@
-import hashlib
 from datetime import datetime, timedelta
 from google.appengine.ext import ndb
 from utils import generate_random_string
@@ -7,7 +6,7 @@ import model
 
 class UserModel(model.FormModel):
     username = ndb.StringProperty(verbose_name=_(u"Username"))
-    password = ndb.StringProperty(verbose_name=_(u"Password"))
+    password = model.PasswordProperty(verbose_name=_(u"Password"))
     email = ndb.StringProperty(verbose_name=_(u"Email"))
     created = ndb.DateTimeProperty(auto_now_add=True)
     verified = ndb.BooleanProperty()
@@ -24,24 +23,12 @@ class UserModel(model.FormModel):
                 "_password_confirm": {"required": (), "confirm_password": (self.password,)},
                 }
 
-    @staticmethod
-    def encrypt(str):
-        m = hashlib.sha512()
-        m.update(str)
-        return m.hexdigest()
-
-    def put(self, *args, **kwds):
-        _password = self.password
-        self.password = self.encrypt(self.password)
-        ret = super(UserModel, self).put(*args, **kwds)
-        self.password = _password
-        return ret
 
     def login(self):
         q = ndb.gql("SELECT password, verified FROM UserModel WHERE username = :1",
                     self.username).get()
         if not q: return 0
-        if (self.encrypt(self.password) == q.password):
+        if (model.PasswordProperty.do_hash(self.password) == q.password):
             if q.verified:
                 self.key = q.key
                 return 1

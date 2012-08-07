@@ -6,6 +6,7 @@ import config
 import utils
 from user import UserModel
 from requesthandler import RequestHandler
+import rbac
 
 def generate_confirm_link(username):
     token = utils.generate_random_string(30)
@@ -45,7 +46,8 @@ class UserConfirmHandler(RequestHandler):
             q.delete()
             the_user = UserModel.query(UserModel.username==username).get()
             the_user.verified = True
-            the_user.put()
+            user_key = the_user.put()
+            rbac.add_role(user_key, rbac.default_role("registered"))
             values = {
                     "message": _("Congratulations! Your account has been successfully activated \
                                     , thanks for registering."),

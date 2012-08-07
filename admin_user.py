@@ -3,6 +3,8 @@ from webapp2_extras.i18n import _
 from user import UserModel
 import user_confirm
 import admin
+import config
+import rbac
 
 #User management page
 class AdminUserHandler(admin.AdminRequestHandler):
@@ -34,14 +36,24 @@ class AdminAddUserHandler(admin.AdminRequestHandler):
         model = UserModel(verified=False)
         model.assign(self)
         if model.validate():
-            model.put()
-            user_confirm.send_confirmation_mail(username, email)
-            values = {
-                    "message": _(u"An email has been sent to you that contains the link to activate your account, \
-                                    check your mail box."),
-                    "redirect": None,
-                    }
-            self.response.out.write(self.render("noticepage", values))
+            if config.get_config("user_email_confirm") == "yes":
+                model.put()
+                user_confirm.send_confirmation_mail(username, email)
+                values = {
+                        "message": _(u"""An email that contains the link to activate the account \
+                            has been sent to the email"""),
+                        "redirect": None,
+                        }
+                self.response.out.write(self.render("noticepage", values))
+            else:
+                model.verified = True
+                user_key = model.put()
+                rbac.add_role(user_key, rbac.default_role("registered"))
+                values = {
+                        "message": _(u"""Successfully registered."""),
+                        "redirect": None,
+                        }
+                self.response.out.write(self.render("noticepage", values))
         else:
             values = {
                     "model": model

@@ -1,5 +1,6 @@
 from google.appengine.ext import ndb
 import validators
+import hashlib
 
 class UnsavedProperty(object):
     _value = None
@@ -14,6 +15,16 @@ class UnsavedProperty(object):
 
     def __set__(self, entity, value):
         self._value = value
+
+class PasswordProperty(ndb.StringProperty):
+    @staticmethod
+    def do_hash(str):
+        m = hashlib.sha256()
+        m.update(str)
+        return m.hexdigest()
+
+    def _to_base_type(self, value):
+        return self.do_hash(value)
 
 class MyMetaModel(ndb.MetaModel):
     def __init__(cls, name, bases, classdict):
@@ -77,20 +88,13 @@ class FormModel(ndb.Model):
         self._validated = True
         return not self.validations.has_error()
 
-    def put(self):
-        if not self._validated:
-            self.validate()
-        if self.get_errors():
-            raise Exception("Cannot save to the database because there are validation errors.")
+    def put(self, force_validation=True):
+        if force_validation:
+            if not self._validated:
+                self.validate()
+            if self.get_errors():
+                raise Exception("Cannot save to the database because there are validation errors.")
         return super(FormModel, self).put()
-
-    def _put(self):
-        """Bypass form validation and save directly to the database
-        ONLY USED FOR UNIT TESTS, DON'T EVER USE THIS METHOD FOR ANYTHING ELSE!
-        """
-        if not self._validated:
-            self.validate() #Just "pretend" to validate, so that the tests would catch some bugs in validation
-        return super(FormModel, self).put() #this line is executed, no matter the validation is ok or not
 
     def assign(self, rhandler):
         data = rhandler.request.POST.dict_of_lists()

@@ -16,8 +16,7 @@ def register_permissions():
 def install_rbac_default():
     rbac.default_role("super_admin", _(u"Super Admin"))
     guest = rbac.default_role("guest", _(u"Guest"))
-    unverified = rbac.default_role("unverified_user", _(u"Unverified User"), parents=[guest])
-    registered = rbac.default_role("registered_user", _(u"Registered User"), parents=[unverified])
+    registered = rbac.default_role("registered", _(u"Registered User"), parents=[guest])
     admin = rbac.default_role("admin", _(u"Admin"), parents=[registered])
     rbac.allow(registered, ["edit_own_blog"])
     rbac.allow(admin, ["access_acp", "manage_user"])

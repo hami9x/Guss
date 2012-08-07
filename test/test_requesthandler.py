@@ -6,7 +6,7 @@ import install
 class Data:
     @classmethod
     def init(cls):
-        cls.admin = user.UserModel(username="genius", email="idiot@gmail.com")._put()
+        cls.admin = user.UserModel(username="genius", email="idiot@gmail.com").put(force_validation=False)
         cls.admin_role = rbac.default_role("admin")
         rbac.add_role(cls.admin, cls.admin_role)
         rbac.register_permission("troll", "Trolling")

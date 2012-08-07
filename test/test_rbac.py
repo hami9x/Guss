@@ -10,7 +10,7 @@ class TestRBAC(unittest.TestCase):
         self.testbed.init_datastore_v3_stub()
         install.install_rbac();
         self.user = user.UserModel(username="idiot", email="genius@gmail.com")
-        self.user_key = self.user._put()
+        self.user_key = self.user.put(force_validation=False)
 
     def test_everything(self):
         parent_role_key = rbac.register_role("Employee")
