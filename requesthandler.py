@@ -62,11 +62,11 @@ class RequestHandler(webapp2.RequestHandler):
     def logged_in(self):
         return self.get_current_user() != None
 
-    def _get(self):
+    def _get(self, *args, **kwds):
         """To be overridden"""
         pass
 
-    def _post(self):
+    def _post(self, *args, **kwds):
         """To be overridden"""
         pass
 
@@ -81,7 +81,7 @@ class RequestHandler(webapp2.RequestHandler):
 
     def _handler_method_run(self, fn, *args, **kwds):
         self._handler_init(*args, **kwds)
-        if not self._stop: fn()
+        if not self._stop: fn(*args, **kwds)
 
     def get(self, *args, **kwds):
         self.check_permission(self._get, *args, **kwds)
@@ -115,7 +115,7 @@ class RequestHandler(webapp2.RequestHandler):
             return self.render("noticepage", values)
 
     def current_user_check_permission(self, perms):
-        if self.get_current_user() == None:
+        if not self.logged_in():
             return rbac.check_permission_role(rbac.default_role("guest"), perms)
         else:
             return rbac.check_permission(self.get_current_user().key, perms)

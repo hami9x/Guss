@@ -77,6 +77,8 @@ def has_permissions(role_key, perms):
 
 def check_permission_role(role_key, perms):
     """Similar to check_permission, but only applies to a specific role"""
+    if not isinstance(perms, list):
+        perms = [perms]
     if has_permissions(role_key, perms):
         return True
     else:

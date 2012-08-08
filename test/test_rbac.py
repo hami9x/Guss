@@ -20,6 +20,8 @@ class TestRBAC(unittest.TestCase):
         rbac.register_permission("access_acp", "Access the Admin CP")
         rbac.register_permission("another_perm", "An abitrary permission")
         rbac.allow(role_key, "access_acp")
+        self.assertEqual(rbac.check_permission_role(role_key, "access_acp"), True)
+        self.assertEqual(rbac.check_permission_role(role_key, "another_perm"), False)
         self.assertEqual(rbac.check_permission(self.user_key, "access_acp"), True)
         self.assertEqual(rbac.check_permission(self.user_key, "another_perm"), False)
         self.assertRaises(Exception, rbac.check_permission, self.user_key, "__DF_incorrect_perm___")

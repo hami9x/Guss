@@ -2,18 +2,21 @@ from webapp2_extras.i18n import _
 from requesthandler import RequestHandler
 from blog import BlogModel
 
+def can_user_edit_post(handler, model):
+    return (
+            (   handler.current_user_check_permission("edit_own_blog")
+                and
+                handler.logged_in() and (handler.get_current_user().key == model.author)
+            )
+            or handler.current_user_check_permission("edit_all_blog")
+        )
+
 class BlogEditHandler(RequestHandler):
     def __init__(self, *args, **kwds):
         super(BlogEditHandler, self).__init__(*args, **kwds)
 
     def _check_permission(self):
-        return (
-                    (   self.current_user_check_permission("edit_own_blog")
-                        and
-                        self.logged_in() and (self.get_current_user().key == self._blog.author)
-                    )
-                    or self.current_user_check_permission("edit_all_blog")
-                )
+        return can_user_edit_post(self, self._blog)
 
     def _handler_init(self, slug=""):
         self._blog_slug = slug
@@ -40,14 +43,14 @@ class BlogEditHandler(RequestHandler):
         self._blogid = blogid
 
 
-    def _get(self):
+    def _get(self, *args, **kwds):
         values = {
                 "model": self._blog,
                 "blogid": self._blogid,
                 }
         return self.render("blog_edit", values)
 
-    def _post(self):
+    def _post(self, *args, **kwds):
         blog = self._blog
         blog.assign(self)
         if blog.validate():

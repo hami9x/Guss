@@ -10,6 +10,12 @@ class BlogModel(model.FormModel):
     content = ndb.TextProperty(verbose_name=_("Content"))
     slug = ndb.StringProperty()
 
+    def display_author(self):
+        return self.author.get().username
+
+    def display_created(self):
+        return "%d/%d/%d" % (self.created.day, self.created.month, self.created.year)
+
     def _validation(self):
         return {
                 "title": {
