@@ -20,6 +20,8 @@ def get_config(name):
     cache = memcache.get("config__"+name)
     if cache == None:
         q = ndb.gql("SELECT value FROM ConfigModel WHERE name = :1", name).get()
+        if q == None:
+            raise Exception("The configuration does not exist.")
         update_config_cache(name, q.value)
         return q.value
     else:
