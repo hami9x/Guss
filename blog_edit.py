@@ -19,9 +19,9 @@ class BlogEditHandler(RequestHandler):
         self._blog_slug = slug
         blogid = self.request.get("blogid")
         def fn_invalid():
-            self.response.out.write(self.render("noticepage", {
+            self.render("noticepage", {
                 "message": _(u"This blog post does not exist."),
-                }))
+                })
             self.stop()
 
         if blogid:
@@ -45,7 +45,7 @@ class BlogEditHandler(RequestHandler):
                 "model": self._blog,
                 "blogid": self._blogid,
                 }
-        self.response.out.write(self.render("blog_edit", values))
+        return self.render("blog_edit", values)
 
     def _post(self):
         blog = self._blog
@@ -62,4 +62,4 @@ class BlogEditHandler(RequestHandler):
         if not self._blog_slug:
             self.redirect(self.uri_for("blog-edit", slug=blog.slug))
         else:
-            self.response.out.write(self.render("blog_edit", values))
+            return self.render("blog_edit", values)

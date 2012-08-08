@@ -4,7 +4,7 @@ import user
 
 class LoginHandler(RequestHandler):
     def get(self):
-        render_notice = lambda values: self.response.out.write(self.render("noticepage", values))
+        render_notice = lambda values: self.render("noticepage", values)
 
         successful = self.request.get("successful", None)
         if successful == "1":
@@ -12,13 +12,13 @@ class LoginHandler(RequestHandler):
                     "message": _("You successfully signed in, welcome back!"),
                     "redirect": self.request.get("referer"),
                     }
-            render_notice(values)
+            return render_notice(values)
         elif successful == "0":
             values = {
                     "message": _("Login failed, invalid password or user doesn't exist, you could try again."),
                     "redirect": self.uri_for("login"),
                     }
-            render_notice(values)
+            return render_notice(values)
         elif successful == "-1":
             values = {
                     "message": _("The user is valid but not verified,\
@@ -26,17 +26,17 @@ class LoginHandler(RequestHandler):
                             we sent to you when you registered."),
                     "redirect": None,
                     }
-            render_notice(values)
+            return render_notice(values)
         else:
             if self.get_current_user() != None:
                 values = {
                         "message": _("You've logged in, why do you want to do this again?"),
                         "redirect": self.uri_for("home"),
                         }
-                render_notice(values)
+                return render_notice(values)
             else:
                 values = { "referer": self.request.headers.get("Referer", self.uri_for("home")) }
-                self.response.out.write(self.render("loginpage", values))
+                self.render("loginpage", values)
 
     def post(self):
         username = self.request.get("username")

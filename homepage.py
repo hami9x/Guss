@@ -7,4 +7,4 @@ class HomepageHandler(RequestHandler):
                 "logout_url": self.uri_for("logout"),
                 "user": self.get_current_user(),
                 }
-        self.response.out.write(self.render("homepage", values))
+        return self.render("homepage", values)

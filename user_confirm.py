@@ -41,7 +41,7 @@ class UserConfirmHandler(RequestHandler):
                     "message": _("Your confirmation link is invalid, sorry but please check your mail box again."),
                     "redirect": None,
                     }
-            self.response.out.write(self.render("noticepage", values))
+            return self.render("noticepage", values)
         else:
             q.delete()
             the_user = UserModel.query(UserModel.username==username).get()
@@ -53,4 +53,4 @@ class UserConfirmHandler(RequestHandler):
                                     , thanks for registering."),
                     "redirect": self.uri_for("home"),
                     }
-            self.response.out.write(self.render("noticepage", values))
+            return self.render("noticepage", values)

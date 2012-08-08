@@ -29,8 +29,11 @@ class RequestHandler(webapp2.RequestHandler):
     def get_config(self, key): config.get_config(key)
     def update_config(self, *args, **kwds): config.update_config(*args, **kwds)
 
-    def render(self, *args, **kwds):
+    def render_template(self, *args, **kwds):
         return self._template.render(*args, **kwds)
+
+    def render(self, *args, **kwds):
+        return self.response.out.write(self.render_template(*args, **kwds))
 
     def dispatch(self):
         # Get a session store for this request.
@@ -109,7 +112,7 @@ class RequestHandler(webapp2.RequestHandler):
                     "message": _(u"You are not allowed to access this page."),
                     "redirect": None,
                     }
-            self.response.out.write(self.render("noticepage", values))
+            return self.render("noticepage", values)
 
     def current_user_check_permission(self, perms):
         if self.get_current_user() == None:

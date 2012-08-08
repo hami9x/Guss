@@ -13,7 +13,7 @@ class AdminConfigHandler(admin.AdminRequestHandler):
         values = {
                 "configs": q
                 }
-        self.response.out.write(self.render("admin_config", values))
+        return self.render("admin_config", values)
 
     def _post(self):
         q = self.get_all_visible_config()
