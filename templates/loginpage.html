@@ -1,5 +1,5 @@
-<html>
-<body>
+{% extends "base.html" %}
+{% block body %}
     <form method="post" action="">
         <ul>
             <li>{{gettext("Username:")}} <input type="text" name="username"/></li>
@@ -8,5 +8,4 @@
             <li><input type="submit" value="{{gettext("Submit")}}"/></li>
         </ul>
     </form>
-</body>
-</html>
+{% endblock %}

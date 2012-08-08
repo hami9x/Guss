@@ -1,15 +1,12 @@
+{% extends "base.html" %}
 {% import "form.html" as form %}
-<html>
-    <head>
-    </head>
-    <body>
-        <form method="post" action="">
-            <ul>
-                <li>{{ form.input_field(model, "title") }}</li>
-                <li>{{ form.textarea_field(model, "content") }}</li>
-            </ul>
-            {% if blogid %}<input type="hidden" name="id" value="{{ blogid }}">{% endif %}
-            {{ form.submit() }}
-        </form>
-    </body>
-</html>
+{% block body %}
+    <form method="post" action="">
+        <ul>
+            <li>{{ form.input_field(model, "title") }}</li>
+            <li>{{ form.textarea_field(model, "content") }}</li>
+        </ul>
+        {% if blogid %}<input type="hidden" name="id" value="{{ blogid }}">{% endif %}
+        {{ form.submit() }}
+    </form>
+{% endblock %}

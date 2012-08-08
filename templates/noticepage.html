@@ -1,8 +1,7 @@
-<html>
-<head>
+{% extends "base.html" %}
+{% block head %}
     {% if redirect %}<meta http-equiv="Refresh" content="5;url={{redirect}}">{% endif %}
-</head>
-<body>
+{% endblock %}
+{% block body %}
     {{ message }}
-</body>
-</html>
+{% endblock %}

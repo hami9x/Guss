@@ -1,15 +1,14 @@
+{% extends "base.html" %}
 {% import "form.html" as form %}
-<html>
-    <body>
-        <h2>{{ _("Add user") }}</h2>
-        <form method="post" action="">
-            <ul>
-                <li>{{ form.input_field(model, "username") }}</li>
-                <li>{{ form.input_field(model, "email") }}</li>
-                <li>{{ form.input_field(model, "password", "password") }}</li>
-                <li>{{ form.input_field(model, "_password_confirm", "password") }}</li>
-            </ul>
-            {{ form.submit() }}
-        </form>
-    </body>
-</html>
+{% block body %}
+    <h2>{{ _("Add user") }}</h2>
+    <form method="post" action="">
+        <ul>
+            <li>{{ form.input_field(model, "username") }}</li>
+            <li>{{ form.input_field(model, "email") }}</li>
+            <li>{{ form.input_field(model, "password", "password") }}</li>
+            <li>{{ form.input_field(model, "_password_confirm", "password") }}</li>
+        </ul>
+        {{ form.submit() }}
+    </form>
+{% endblock %}
