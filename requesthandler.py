@@ -16,6 +16,9 @@ class JinjaEnv(jinja2.Environment):
             )
         self.install_gettext_translations(i18n, newstyle=True)
         self.globals["getattr"] = getattr
+        def raise_exception(message):
+            raise Exception(message)
+        self.globals["raise_exception"] = raise_exception
 
     def render(self, name, values={}):
         return self.get_template(name+".html").render(values)
@@ -33,6 +36,7 @@ class RequestHandler(webapp2.RequestHandler):
         return self._template.render(*args, **kwds)
 
     def render(self, *args, **kwds):
+        self.stop()
         return self.response.out.write(self.render_template(*args, **kwds))
 
     def dispatch(self):

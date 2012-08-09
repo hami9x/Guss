@@ -26,6 +26,15 @@ class PasswordProperty(ndb.StringProperty):
     def _to_base_type(self, value):
         return self.do_hash(value)
 
+class BooleanProperty(ndb.BooleanProperty):
+    def _validate(self, value):
+        if value in [u"yes", "yes"]:
+            value = True
+        elif value in [u"no", "no"]:
+            value = False
+        assert type(value) == bool
+        return value
+
 class MyMetaModel(ndb.MetaModel):
     def __init__(cls, name, bases, classdict):
         super(MyMetaModel, cls).__init__(name, bases, classdict)
@@ -70,8 +79,6 @@ class FormModel(ndb.Model):
         self.validations = ValidationEngine(self)
 
     def get_errors(self):
-        if not self._validated:
-            self.validate()
         return self.validations.errors
 
     def _validation(self):
@@ -104,11 +111,12 @@ class FormModel(ndb.Model):
 
     def get_verbose_name(self, attr):
         if attr in self._properties:
-            return self._properties[attr]._verbose_name
+            ret = self._properties[attr]._verbose_name
         elif attr in self._unsaved_properties:
-            return self._unsaved_properties[attr]._verbose_name
+            ret = self._unsaved_properties[attr]._verbose_name
         else:
             raise AttributeError("FormModel instance has no attribute %s" % attr)
+        return ret if ret != None else attr
 
     def is_required(self, field):
         v_dict = self._validation()

@@ -84,6 +84,8 @@ class UniqueValidator(Validator):
             raise Exception("""Something is wrong here, the 'value' argument is
                     different from the value of the model field""")
         cls = type(model)
-        if cls.query(getattr(cls, field)==value).count() > 0:
-            self._raise()
+        q = cls.query(getattr(cls, field)==value)
+        if q.count() > 0:
+            if (model.key != q.get().key):
+                self._raise()
 validate_unique = UniqueValidator()

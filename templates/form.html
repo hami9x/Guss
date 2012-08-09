@@ -15,11 +15,11 @@
 {% endmacro %}
 
 {% macro input(model, field, type="text") %}
-    <input type="{{ type }}" name="{{ field }}" class="form-input-field"
+    <input type="{{ type }}" name="{{ field }}" id="{{ field }}" class="form-input-field"
     value= "{% if (type!="password") and (getattr(model, field) != None) -%}
                     {{ getattr(model, field) }}
             {%- else %}{% endif -%}"
-            {{ caller() }}
+            {% if caller is defined %} {{ caller() }} {% endif %}
     />
     {%- if not model.is_required(field) %} {{ _("(Optional)") }} {% endif -%}
 {% endmacro %}
@@ -32,13 +32,24 @@
     {{ v_e(model, field) }}
 {% endmacro %}
 
+{% macro textarea(model, field) %}
+    <textarea name="{{ field }}" id="{{ field }}">{{ getattr(model, field) }}</textarea>
+{% endmacro %}
+
 {% macro textarea_field(model, field) %}
     {{ field_label(model, field) }}:
-    <textarea name="{{ field }}">{{ getattr(model, field) }}</textarea>
+    {{ textarea(model, field) }}
     {{ v_e(model, field) }}
 {% endmacro %}
 
 {% macro submit(value="Submit") %}
     {% set value= _(value) %}
     <input type="submit" value="{{ value }}"/>
+{% endmacro %}
+
+{% macro boolean_combo(field) %}
+    <select name="{{ field }}" id="{{ field }}">
+        <option value="yes">{{ _("Yes") }}</option>
+        <option value="no">{{ _("No") }}</option>
+    </select>
 {% endmacro %}

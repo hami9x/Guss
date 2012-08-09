@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% import "form.html" as form %}
+{% block body %}
+    <form action="" method="post">
+        <ul>
+            {% for prop, val in props.iteritems() %}
+                {% set prop_type = val.__class__.__name__ %}
+                {#{% if prop in options %}#}
+                    {#{% set p_options = options[prop] %}#}
+                {#{% else %}#}
+                    {#{% set p_options = {} %}#}
+                {#{% endif %}#}
+                {% set p_options = options[prop] if prop in options else {} %}
+                <li>
+                    {{ form.field_label(model, prop) }}:
+                    {% if prop_type in ["unicode", "str"] %}
+                        {% set type = p_options.get("type", "input") %}
+                        {% if type == "input" %}
+                            {{ form.input(model, prop, p_options.get("input_type", "text")) }}
+                        {% elif type == "textarea" %}
+                            {{ form.textarea(model, prop) }}
+                        {% else %}
+                            {{ raise_exception("the prop type is invalid") }}
+                        {% endif %}
+                    {% elif prop_type == "bool" %}
+                        {{ form.boolean_combo(prop) }}
+                    {% endif %}
+                    {{ form.v_e(model, prop) }}
+                </li>
+            {% endfor %}
+        </ul>
+        {{ form.submit("Save") }}
+    </form>
+{% endblock %}

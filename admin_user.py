@@ -1,15 +1,22 @@
 from google.appengine.ext import ndb
 from webapp2_extras.i18n import _
 from user import UserModel
+from google.net.proto import ProtocolBuffer
 import user_confirm
 import admin
 import config
 import rbac
 
+def can_manage_user(handler):
+    return handler.current_user_check_permission("manage_user")
+
 #User management page
 class AdminUserHandler(admin.AdminRequestHandler):
     DEFAULT_LIMIT = 20
     DEFAULT_ORDER = "created"
+
+    def _check_permission(self): return can_manage_user(self)
+
     def _get(self):
         try:
             limit = int(self.request.get("limit", self.DEFAULT_LIMIT))
@@ -21,11 +28,14 @@ class AdminUserHandler(admin.AdminRequestHandler):
         q = ndb.gql("SELEcT * FROM UserModel ORDER BY %s DESC LIMIT %d" % (order, limit))
         values = {
                 "users": q,
-                "user_add_url": self.uri_for("add-user")
+                "user_add_url": self.uri_for("add-user"),
+                "edit_link": lambda user: self.uri_for("admin-edit-user", keystr=user.key.urlsafe()),
                 }
         return self.render("admin_user", values)
 
 class AdminAddUserHandler(admin.AdminRequestHandler):
+    def _check_permission(self): return can_manage_user(self)
+
     def _get(self):
         model = UserModel()
         return self.render("admin_user_add", {"model": model})
@@ -59,3 +69,29 @@ class AdminAddUserHandler(admin.AdminRequestHandler):
                     "model": model
                     }
             return self.render("admin_user_add", values)
+
+class AdminEditUserHandler(admin.AdminEditInterface):
+    def _check_permission(self): return can_manage_user(self)
+
+    def render_interface(self, model):
+        model.password = ""
+        self._render_interface(model, exclude_props=["created"], options={
+        "password_confirm": {
+            "input_type": "password",
+            },
+        })
+
+    def _handler_init(self, keystr=""):
+        try:
+            self.model = ndb.Key(urlsafe=keystr).get()
+        except ProtocolBuffer.ProtocolBufferDecodeError:
+            self.render("noticepage", {
+                "message": _("User key is not valid."),
+                })
+
+    def _post(self, *args, **kwds):
+        orig_password = self.model.password
+        self.model.assign(self)
+        if self.request.get("password") == "":
+            self.model.password = orig_password
+        self._put_and_render()

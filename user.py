@@ -9,7 +9,7 @@ class UserModel(model.FormModel):
     password = model.PasswordProperty(verbose_name=_(u"Password"))
     email = ndb.StringProperty(verbose_name=_(u"Email"))
     created = ndb.DateTimeProperty(auto_now_add=True)
-    verified = ndb.BooleanProperty()
+    verified = model.BooleanProperty(verbose_name=_(u"Verified"))
     _password_confirm = model.UnsavedProperty(verbose_name=_(u"Confirm password"))
 
     def __init__(self, *args, **kwds):
