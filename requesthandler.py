@@ -58,7 +58,7 @@ class RequestHandler(webapp2.RequestHandler):
     def get_current_user(self):
         """Get the current user"""
         try:
-            _gabage = self._current_user
+            getattr(self, "_current_user")
         except AttributeError:
             self._current_user = user.get_current_user(self)
         return self._current_user

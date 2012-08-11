@@ -11,27 +11,15 @@ def can_manage_user(handler):
     return handler.current_user_check_permission("manage_user")
 
 #User management page
-class AdminUserHandler(admin.AdminRequestHandler):
-    DEFAULT_LIMIT = 20
-    DEFAULT_ORDER = "created"
-
+class AdminUserHandler(admin.AdminTableInterface):
     def _check_permission(self): return can_manage_user(self)
 
-    def _get(self):
-        try:
-            limit = int(self.request.get("limit", self.DEFAULT_LIMIT))
-        except ValueError:
-            limit = self.DEFAULT_LIMIT
-        order = self.request.get("order", self.DEFAULT_ORDER)
-        if not (order in ["username", "email", "created"]):
-            order = self.DEFAULT_ORDER
-        q = ndb.gql("SELEcT * FROM UserModel ORDER BY %s DESC LIMIT %d" % (order, limit))
-        values = {
-                "users": q,
-                "user_add_url": self.uri_for("add-user"),
-                "edit_link": lambda user: self.uri_for("admin-edit-user", keystr=user.key.urlsafe()),
-                }
-        return self.render("admin_user", values)
+    def render_interface(self):
+        fn_urlsafe = lambda key: key.urlsafe()
+        self._render_interface(UserModel, props=["username", "email", "created", "verified"],
+                toolbox=[(_("Edit"), admin.UriForTool("admin-edit-user", keystr=("key", fn_urlsafe)))],
+                links=[(_("Add"), self.uri_for("admin-add-user"))]
+        )
 
 class AdminAddUserHandler(admin.AdminRequestHandler):
     def _check_permission(self): return can_manage_user(self)

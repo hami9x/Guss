@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block body %}
+    <form method="post" action="">
+        {% for link in links %}
+            <a href="{{ link[1] }}">{{ link[0] }}</a>
+        {% endfor %}
+        <table>
+            <tbody>
+                {% for model in models %}
+                    <tr>
+                        <td><input type="checkbox" name="checklist}" id="checklist}"
+                                    value="{{model.key.id()}}"></td>
+                        <td>{{ loop.index }}</td>
+                        {% for prop in props %}
+                            <td>{{ getattr(model, prop) }}</td>
+                        {% endfor %}
+                        {% for tool in toolbox %}
+                            <td><a href="{{ tool[1].get_uri(model) }}">{{ tool[0] }}</a></td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <select>
+            {% for operation in operations %}
+                <option name="{{ operation[0] }}">{{ operation[1] }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value={{_("Action!") }}>
+        <p>
+        {% if has_next() %}<a href="{{ next_url }}"></a>{{_("Next")}} {% endif %}
+        {% if has_prev() %}<a href="{{ prev_url }}"></a>{{_("Previous")}} {% endif %}
+        </p>
+    </form>
+{% endblock %}
