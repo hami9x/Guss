@@ -46,4 +46,7 @@ class TestValidators(unittest.TestCase):
         validators.validate_unique("abc")
 
         mod.put()
+        validators.validate_unique("abc") #still not raise error because the new model and the saved one are the same
+        mod2 = DummyModel(prop="abc")
+        validators.CommonData.model = mod2
         self.assertRaises(VE, validators.validate_unique, "abc")
