@@ -3,6 +3,7 @@ from webapp2_extras.i18n import _
 import rbac
 def register_permissions():
     permissions = [
+                ("root", _(u"The right to modify most dangerous things, only given to the root user")),
                 ("access_acp", _(u"Access the Admin Control Panel")),
                 ("manage_user", _(u"Manage users")),
                 ("config", _(u"Edit important site configurations.")),

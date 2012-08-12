@@ -16,5 +16,6 @@ app = webapp2.WSGIApplication([
                     webapp2.Route(r"/admin/user/edit/<keystr:[\w-]*>", handler="admin_user.AdminEditUserHandler", name="admin-edit-user"),
                     webapp2.Route(r"/blog/edit/<slug:[\w-]*>", handler="blog_edit.BlogEditHandler", name="blog-edit"),
                     webapp2.Route(r"/blog/view/<slug:[\w-]*>", handler="blog_view.BlogViewHandler", name="blog-view"),
+                    webapp2.Route("/admin/dev/generate", handler="dev_tools.ModelGenerator", name="dev-generate"),
                     webapp2.Route("/", handler="homepage.HomepageHandler", name="home"),
                 ], debug=True, config=tempconfig)
