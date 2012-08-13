@@ -49,6 +49,7 @@ class UriForTool(object):
                 params[k] = getattr(model, attr)
         return webapp2.uri_for(self._uri_name, **params)
 
+NOTHING = object()
 class AdminTableInterface(AdminRequestHandler):
     def render_interface(self):
         pass
@@ -56,8 +57,14 @@ class AdminTableInterface(AdminRequestHandler):
     def _render_interface(self, modelCls, props,
             toolbox=[],
             links=[],
-            operations=[("op_delete", _("Delete selected"))],
+            operations=NOTHING,
             default_limit=20, default_order="created"):
+
+        if operations is NOTHING:
+            operations=[("op_delete", _("Delete selected"), self.op_delete_selected)]
+        self._operations = operations
+
+        self._modelCls = modelCls
 
         for prop in props:
             if not hasattr(modelCls, prop):
@@ -76,15 +83,15 @@ class AdminTableInterface(AdminRequestHandler):
         q_forward = modelCls.query().order(cls_order)
         q_reverse = modelCls.query().order(-cls_order)
         models, next_cursor, more = q_forward.fetch_page(limit, start_cursor=cursor)
-        unused_models, prev_cursor, prev_more = q_reverse.fetch_page(limit, start_cursor=rcursor)
+        unused_models, prev_cursor, unused_prev_more = q_reverse.fetch_page(limit, start_cursor=rcursor)
 
-        def get_current_url(**kwds):
+        def get_current_url(cursor, **kwds):
             params = "?"
-            params += "".join(["%s=%s" % (param[0], param[1])
-                for param in {
+            params += "&".join(["%s=%s" % (k, v)
+                for k, v in {
                     "cursor": cursor.urlsafe(),
                     "limit": str(limit),
-                    }
+                    }.iteritems()
                 ])
             return self.request.path + params
 
@@ -95,11 +102,24 @@ class AdminTableInterface(AdminRequestHandler):
                 "links": links,
                 "operations": operations,
                 "has_next": lambda: more,
-                "has_prev": lambda: prev_more,
-                "next_url": get_current_url(cursor=cursor),
-                "prev_url": get_current_url(cursor=rcursor),
+                "has_prev": lambda: (cursor != Cursor()) and (prev_cursor != None),
+                "next_url": get_current_url(cursor=next_cursor),
+                "prev_url": get_current_url(cursor=prev_cursor.reversed()) if prev_cursor else "",
                 }
         return self.render("admin_table_interface", values)
 
+    def op_delete_selected(self, model):
+        model.key.delete()
+
     def _get(self):
         self.render_interface()
+
+    def _post(self):
+        selected = self.request.get("checklist", allow_multiple=True)
+        for model_id in selected:
+            model = self._modelCls.get_by_id(model_id)
+            if model is None:
+                raise Exception("the model ID submitted is invalid.")
+            for operation in self._operations:
+                fn = operation[2]
+                fn(model)

@@ -10,7 +10,6 @@
                     <tr>
                         <td><input type="checkbox" name="checklist}" id="checklist}"
                                     value="{{model.key.id()}}"></td>
-                        <td>{{ loop.index }}</td>
                         {% for prop in props %}
                             <td>{{ getattr(model, prop) }}</td>
                         {% endfor %}
@@ -28,8 +27,8 @@
         </select>
         <input type="submit" value={{_("Action!") }}>
         <p>
-        {% if has_next() %}<a href="{{ next_url }}"></a>{{_("Next")}} {% endif %}
-        {% if has_prev() %}<a href="{{ prev_url }}"></a>{{_("Previous")}} {% endif %}
+        {% if has_next() %}<a href="{{ next_url }}">{{_("Next")}}</a>{% endif %}
+        {% if has_prev() %}<a href="{{ prev_url }}">{{_("Previous")}}</a>{% endif %}
         </p>
     </form>
 {% endblock %}
