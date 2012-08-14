@@ -14,12 +14,15 @@ def can_manage_user(handler):
 class AdminUserHandler(admin.AdminTableInterface):
     def _check_permission(self): return can_manage_user(self)
 
-    def render_interface(self):
+    def table_options(self):
         fn_urlsafe = lambda key: key.urlsafe()
-        self._render_interface(UserModel, props=["username", "email", "created", "verified"],
+        return self._table_options(UserModel, props=["username", "email", "created", "verified"],
                 toolbox=[(_("Edit"), admin.UriForTool("admin-edit-user", keystr=("key", fn_urlsafe)))],
                 links=[(_("Add"), self.uri_for("admin-add-user"))]
         )
+
+    def model_class(self):
+        return UserModel
 
 class AdminAddUserHandler(admin.AdminRequestHandler):
     def _check_permission(self): return can_manage_user(self)

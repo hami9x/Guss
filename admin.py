@@ -50,25 +50,39 @@ class UriForTool(object):
         return webapp2.uri_for(self._uri_name, **params)
 
 NOTHING = object()
-class AdminTableInterface(AdminRequestHandler):
-    def render_interface(self):
-        pass
-
-    def _render_interface(self, modelCls, props,
+class AdminTableOptions(object):
+    def __init__(self, model_cls, props,
             toolbox=[],
             links=[],
             operations=NOTHING,
             default_limit=20, default_order="created"):
-
         if operations is NOTHING:
-            operations=[("op_delete", _("Delete selected"), self.op_delete_selected)]
-        self._operations = operations
-
-        self._modelCls = modelCls
-
+            operations=[("op_delete", _("Delete selected"), lambda model: model.key.delete())]
         for prop in props:
-            if not hasattr(modelCls, prop):
-                raise Exception('%s does not have attribute "%s".', (modelCls.__name__, prop))
+            if not hasattr(model_cls, prop):
+                raise Exception('%s does not have attribute "%s".', (model_cls.__name__, prop))
+        for param, val in locals().items():
+            setattr(self, param, val)
+
+class AdminTableInterface(AdminRequestHandler):
+    def __init__(self, *args, **kwds):
+        super(AdminTableInterface, self).__init__(*args, **kwds)
+        self._options = self.table_options()
+
+    def _table_options(self, *args, **kwds):
+        return AdminTableOptions(*args, **kwds)
+
+    def table_options(self):
+        pass
+
+    def option(self, name):
+        return getattr(self._options, name)
+
+    def render_interface(self, **kwds):
+        default_limit = self.option("default_limit")
+        default_order = self.option("default_order")
+        model_cls = self.option("model_cls")
+        props = self.option("props")
         cursor_str = self.request.get("cursor")
         cursor = Cursor(urlsafe=cursor_str) if cursor_str else Cursor()
         try:
@@ -78,10 +92,10 @@ class AdminTableInterface(AdminRequestHandler):
         order = self.request.get("order", default_value=default_order)
         if not (order in props):
             order = default_order
-        cls_order = getattr(modelCls, order)
+        cls_order = getattr(model_cls, order)
         rcursor = cursor.reversed()
-        q_forward = modelCls.query().order(cls_order)
-        q_reverse = modelCls.query().order(-cls_order)
+        q_forward = model_cls.query().order(cls_order)
+        q_reverse = model_cls.query().order(-cls_order)
         models, next_cursor, more = q_forward.fetch_page(limit, start_cursor=cursor)
         unused_models, prev_cursor, unused_prev_more = q_reverse.fetch_page(limit, start_cursor=rcursor)
 
@@ -98,9 +112,9 @@ class AdminTableInterface(AdminRequestHandler):
         values = {
                 "models": models,
                 "props": props,
-                "toolbox": toolbox,
-                "links": links,
-                "operations": operations,
+                "toolbox": self.option("toolbox"),
+                "links": self.option("links"),
+                "operations": self.option("operations"),
                 "has_next": lambda: more,
                 "has_prev": lambda: (cursor != Cursor()) and (prev_cursor != None),
                 "next_url": get_current_url(cursor=next_cursor),
@@ -108,18 +122,18 @@ class AdminTableInterface(AdminRequestHandler):
                 }
         return self.render("admin_table_interface", values)
 
-    def op_delete_selected(self, model):
-        model.key.delete()
 
     def _get(self):
         self.render_interface()
 
     def _post(self):
+        model_cls = self.option("model_cls")
         selected = self.request.get("checklist", allow_multiple=True)
         for model_id in selected:
-            model = self._modelCls.get_by_id(model_id)
+            model = model_cls.get_by_id(int(model_id))
             if model is None:
                 raise Exception("the model ID submitted is invalid.")
-            for operation in self._operations:
+            for operation in self.option("operations"):
                 fn = operation[2]
                 fn(model)
+        self.render_interface()

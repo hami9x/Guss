@@ -8,7 +8,7 @@
             <tbody>
                 {% for model in models %}
                     <tr>
-                        <td><input type="checkbox" name="checklist}" id="checklist}"
+                        <td><input type="checkbox" name="checklist" id="checklist"
                                     value="{{model.key.id()}}"></td>
                         {% for prop in props %}
                             <td>{{ getattr(model, prop) }}</td>
