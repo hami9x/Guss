@@ -35,8 +35,6 @@ class AdminUserHandler(admin.AdminTableInterface):
                 links=[(_("Add"), self.uri_for("admin-add-user"))]
         )
 
-    def model_class(self):
-        return UserModel
 
 class AdminAddUserHandler(admin.AdminRequestHandler):
     def _check_permission(self): return can_manage_user(self)

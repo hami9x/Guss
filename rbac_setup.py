@@ -24,6 +24,7 @@ def register_permissions():
                 ("edit_own_blog", _(u"Edit user's own blogs.")),
                 ("edit_all_blog", _(u"Edit blogs of any users.")),
                 ("view_blog", _(u"View blog posts.")),
+                ("manage_blog", _(u"Manage blog posts.")),
                 ]
 
     for item in permissions:
@@ -36,4 +37,4 @@ def install_rbac_default():
     admin = rbac.default_role("admin", _(u"Admin"), parents=[registered])
     rbac.allow(guest, ["view_blog"])
     rbac.allow(registered, ["edit_own_blog"])
-    rbac.allow(admin, ["access_acp", "manage_user"])
+    rbac.allow(admin, ["access_acp", "manage_user", "manage_blog"])

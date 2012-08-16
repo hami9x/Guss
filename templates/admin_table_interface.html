@@ -11,13 +11,16 @@
                         <td><input type="checkbox" name="checklist" id="checklist"
                                     value="{{model.key.id()}}"></td>
                         {% for prop in props %}
-                            <td>{{ getattr(model, prop) }}</td>
+                            <td>{{ table_model_attr(model, prop) }}</td>
                         {% endfor %}
                         {% for tool in toolbox %}
                             <td><a href="{{ tool[1].get_uri(model) }}">{{ tool[0] }}</a></td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
+                {% if models|count == 0 %}
+                    <tr><td>{{ _("No item added yet.") }}</td></tr>
+                {% endif %}
             </tbody>
         </table>
         <select>

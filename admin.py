@@ -54,12 +54,12 @@ class UriForTool(object):
 
     def get_uri(self, model):
         params = {}
-        for k, attr_tuple in self._params.items():
-            attr = attr_tuple[0]
-            try:
-                fn = attr_tuple[1] #get the attribute manipulation function
-                params[k] = fn(getattr(model, attr))
-            except IndexError:
+        for k, attr in self._params.items():
+            if isinstance(attr, tuple):
+                attr_name = attr[0]
+                fn = attr[1] #get the attribute manipulation function
+                params[k] = fn(getattr(model, attr_name))
+            else:
                 params[k] = getattr(model, attr)
         return webapp2.uri_for(self._uri_name, **params)
 
@@ -72,9 +72,6 @@ class AdminTableOptions(object):
             default_limit=20, default_order="created"):
         if operations is NOTHING:
             operations=[("op_delete", _("Delete selected"), lambda model: model.key.delete())]
-        for prop in props:
-            if not hasattr(model_cls, prop):
-                raise Exception('%s does not have attribute "%s".', (model_cls.__name__, prop))
         for param, val in locals().items():
             setattr(self, param, val)
 
@@ -123,7 +120,13 @@ class AdminTableInterface(AdminRequestHandler):
                 ])
             return self.request.path + params
 
+        def table_model_attr(model, attr):
+            if attr[-2:] == "()":
+                return getattr(model, attr[:-2])()
+            else: return getattr(model, attr)
+
         values = {
+                "table_model_attr": table_model_attr,
                 "models": models,
                 "props": props,
                 "toolbox": self.option("toolbox"),
@@ -131,8 +134,8 @@ class AdminTableInterface(AdminRequestHandler):
                 "operations": self.option("operations"),
                 "has_next": lambda: more,
                 "has_prev": lambda: (cursor != Cursor()) and (prev_cursor != None),
-                "next_url": get_current_url(cursor=next_cursor),
-                "prev_url": get_current_url(cursor=prev_cursor.reversed()) if prev_cursor else "",
+                "next_url": get_current_url(cursor=next_cursor) if next_cursor else "",
+                "prev_url": get_current_url(cursor=prev_cursor.reversed()) if prev_cursor and cursor else "",
                 }
         return self.render("admin_table_interface", values)
 
