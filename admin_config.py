@@ -37,4 +37,4 @@ class AdminConfigHandler(admin.AdminRequestHandler):
                 conf.value = new_value
                 conf.put()
                 update_config_cache(conf.name, new_value)
-        return self.redirect(self.request.headers.get("Referer", self.uri_for("manage-config")))
+        return self.redirect(self.request.headers.get("Referer", self.uri_for("admin-manage-config")))
