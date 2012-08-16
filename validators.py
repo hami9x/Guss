@@ -80,20 +80,15 @@ class RequiredValidator(MinLengthValidator):
     def message(self):
         return _(u"Cannot be blank")
 
-    def __call__(self, value):
+    def __call__(self, value, **kwds):
         super(RequiredValidator, self).__call__(value, 1)
 validate_required = RequiredValidator()
-
-class CommonData(object):
-    pass
 
 class UniqueValidator(Validator):
     def message(self):
         return _(u"already taken, please choose a different one")
 
-    def __call__(self, value):
-        model = CommonData.model
-        field = CommonData.field
+    def __call__(self, value, model, field):
         if (getattr(model, field) != value):
             raise Exception("""Something is wrong here, the 'value' argument is
                     different from the value of the model field""")

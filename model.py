@@ -63,19 +63,35 @@ class ValidationEngine(object):
     def __init__(self, model):
         self.errors = {}
         self.model = model
+        self._additional_inf = {
+                "unique": ["model", "field"],
+                }
+        self._inf = {}
+        self.set_inf("model", self.model)
+
+    def set_inf(self, name, val):
+        self._inf[name] = val
+
+    def get_inf(self, name):
+        return self._inf[name]
 
     """Validate a form field with the validators in the validators module, errors are saved into
     the self.errors dictionary"""
     def validate(self, field, method, *args):
-        validators.CommonData.model = self.model
-        validators.CommonData.field = field
+        self.set_inf("field", field)
+
         field_value = getattr(self.model, field)
         #Do not perform validation if:
         #  Field is None (not used in the form)
         #  Field is left blank and this is not a "required" validation
         if (field_value is not None) and ((method == "required") or (field_value != "")):
             try:
-                getattr(validators, "validate_"+method)(field_value, *args)
+                fn = getattr(validators, "validate_"+method)
+                additional = {}
+                if method in self._additional_inf:
+                    for inf in self._additional_inf[method]:
+                        additional[inf] = self.get_inf(inf)
+                fn(field_value, *args, **additional)
             except validators.ValidationError as e:
                 if not(field in self.errors):
                     self.errors[field] = []

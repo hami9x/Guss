@@ -55,12 +55,9 @@ class TestValidators(unittest.TestCase):
         class DummyModel(ndb.Model):
             prop = ndb.StringProperty()
         mod = DummyModel(prop="abc")
-        validators.CommonData.model = mod
-        validators.CommonData.field = "prop"
-        validators.validate_unique("abc")
-
+        validators.validate_unique("abc", model=mod, field="prop")
         mod.put()
-        validators.validate_unique("abc") #still not raise error because the new model and the saved one are the same
+        validators.validate_unique("abc", model=mod, field="prop")  #still not raise error because
+                                                                  ##the new model and the saved one are the same
         mod2 = DummyModel(prop="abc")
-        validators.CommonData.model = mod2
-        self.assertRaises(VE, validators.validate_unique, "abc")
+        self.assertRaises(VE, validators.validate_unique, "abc", mod2, field="prop")
