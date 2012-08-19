@@ -1,26 +1,25 @@
 Guss - Growing Up Social System
 ====
 
-A codebase to be used for sites that support social networking and content posting features, runs on Google App Engine.
+Built for Google App Engine. This is a codebase that aims to provide a bunch of things related to user interaction and content management, packed into a cohesive system, with a stress on performance, cost-effectiveness and code maintainability. Written in Python.
 
-## Why I started this project?
+## The why:
 
-* Nowadays websites usually need communication and content posting features, so having a good codebase that supports those things would be great
-* To practice python and Google App Engine, to make my dream of constructing successfully a big software system real
-* And of course, to have fun ^^!
+* There's a lack of high-quality, performant and feature-complete content management and social networking codebase dedicated to Google App Engine.
 
 ## The goals:
 
-* A good, maintainable and readable codebase, let's make the code as beautiful as possible!
-* Runs fast and uses resources effectively
+* A clean, maintainable, cohesive, and readable codebase.
+* Lightning-fast and cost-effective.
 * Stable
-* Simple, without much of the interface, installing and designing sugar, this is just a codebase, not a full social networking software
-* Supports the following things:
-    * Admin control panel, just enough functionalities for managing what necessary
-    * Simple blogging system for members
-    * Simple forum-like discussion system
-    * Member profile, activity stream, private messaging, connection/following... (basic functionalities of a social network)
-    * Real-time chat (using App Engine channel API)
+* Born to be forked, no need for a slow and complicated extension system.
+* Features:
+    * Admin control panel. Just make enough tools to control things.
+    * A role-based access control system.
+    * A blogging system for members.
+    * A discussion system that both serves as a blog commenting and a simple forum system.
+    * User authentication, member profile, activity stream, private messaging and user connection/following (basic functionalities for a community).
+    * It looks disgusting without a design, so a basic design based on Twitter Bootstrap or Zurb Foundation would be great, but not very important.
 
 ## License:
 Copyright 2012 Hai Thanh Nguyen
