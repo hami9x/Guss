@@ -24,9 +24,17 @@ class AdminRequestHandler(RequestHandler):
 
 class AdminEditInterface(AdminRequestHandler):
     def render_interface(self, model):
+        """To be overridden by a subclass to _render_interface with some customizations."""
         self._render_interface(model)
 
     def _render_interface(self, model, exclude_props=[], options={}):
+        """Render the interface with specific parameters.
+        Sshould only be used in a method that overrides render_interface.
+        Args:
+            model: the entity to be edited
+            exclude_props: properties that shouldn't be edited
+            options: options regarding the properties
+        """
         model_dict = model.to_dict(exclude=exclude_props)
 
         self.render("admin_edit_interface", {
@@ -36,9 +44,11 @@ class AdminEditInterface(AdminRequestHandler):
             })
 
     def _get(self, *args, **kwds):
+        """Shouldn't be overridden."""
         self.render_interface(self.model)
 
     def _post(self, *args, **kwds):
+        """Should only override it when absolutely necessary."""
         self.model.assign(self)
         self._put_and_render()
 
@@ -48,10 +58,17 @@ class AdminEditInterface(AdminRequestHandler):
         self.render_interface(self.model)
 
 class UriForTool(object):
+    """Represents a "tool" link for each item in the table interface.
+    This is a class that helps customizing the behavior of the table interface (see AdminTableInterface class.
+    Each link (for example, an Edit link) usually requires some info from each entity, so adding those links
+    in the table wouldn't be possileb without this class.
+    Consider this a special version of uri_for().
+    """
     def __init__(self, uri_name, **kwds):
         self._uri_name = uri_name
         self._params = kwds
 
+    """Get the link."""
     def get_uri(self, model):
         params = {}
         for k, attr in self._params.items():
@@ -70,6 +87,15 @@ class AdminTableOptions(object):
             links=[],
             operations=NOTHING,
             default_limit=20, default_order="created"):
+        """Specify interface options for the table.
+        Args:
+            model_cls: the Model class, items listed in this table are this model's entities
+            props: list of properties to be used as columns of the table
+            toolbox: list of links for each row in the table, for example, Edit
+            operations: list of bulk actions that could be done, for example, Delete Seleted
+            default_limit: the default number of items to be shown
+            default_order: the default order for the items
+        """
         if operations is NOTHING:
             operations=[("op_delete", _("Delete selected"), lambda model: model.key.delete())]
         for param, val in locals().items():
@@ -81,15 +107,21 @@ class AdminTableInterface(AdminRequestHandler):
         self._options = self.table_options()
 
     def _table_options(self, *args, **kwds):
+        """To be used in table_options() for specifying the table options.
+        See the AdminTableOptions class for some clues about the options available and
+        look at the code of this class's subclasses for usage examples."""
         return AdminTableOptions(*args, **kwds)
 
     def table_options(self):
+        """Must be overridden by a child class, this method should use _table_options() to specify the options."""
         pass
 
     def option(self, name):
+        """Get value of an option."""
         return getattr(self._options, name)
 
     def render_interface(self, **kwds):
+        """Render the inteface."""
         default_limit = self.option("default_limit")
         default_order = self.option("default_order")
         model_cls = self.option("model_cls")
@@ -111,16 +143,20 @@ class AdminTableInterface(AdminRequestHandler):
         unused_models, prev_cursor, unused_prev_more = q_reverse.fetch_page(limit, start_cursor=rcursor)
 
         def get_current_url(cursor, **kwds):
+            """Get the current path with the cursor and the url parameters updated.
+            Used for rendering the Next and Previous buttons."""
             params = "?"
             params += "&".join(["%s=%s" % (k, v)
                 for k, v in {
                     "cursor": cursor.urlsafe(),
                     "limit": str(limit),
+                    "order": order,
                     }.iteritems()
                 ])
             return self.request.path + params
 
         def table_model_attr(model, attr):
+            """Help showing content of the columns."""
             if attr[-2:] == "()":
                 return getattr(model, attr[:-2])()
             else: return getattr(model, attr)
@@ -141,9 +177,11 @@ class AdminTableInterface(AdminRequestHandler):
 
 
     def _get(self):
+        """Shouldn't be overridden."""
         self.render_interface()
 
     def _post(self):
+        """Shouldn't be overridden."""
         model_cls = self.option("model_cls")
         selected = self.request.get("checklist", allow_multiple=True)
         for model_id in selected:
