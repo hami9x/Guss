@@ -44,6 +44,13 @@ class DummyChild_OK(DummyParent):
         return rbac.check_permission(Data.admin, "joke")
 ##End## Permission dummy classes ####
 
+class Dummy(RequestHandler):
+    def _handler_init(self):
+        self.a = "123"
+
+    def _get(self):
+        assert self.a == "123"
+
 class RequestHandlerTest(unittest.TestCase):
     def setUp(self):
         self.testbed = testbed.Testbed()
@@ -57,3 +64,7 @@ class RequestHandlerTest(unittest.TestCase):
         self.assertEqual(fchild._check_permission_hierarchy(), False)
         ochild = DummyChild_OK()
         self.assertEqual(ochild._check_permission_hierarchy(), True)
+
+    def test_method_order(self):
+        d = Dummy()
+        d.get()

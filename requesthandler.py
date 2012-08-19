@@ -97,15 +97,11 @@ class RequestHandler(webapp2.RequestHandler):
         """To be overridden. This method performs the initialization that runs at the beginning of post() or get()"""
         pass
 
-    def _handler_method_run(self, fn, *args, **kwds):
-        self._handler_init(*args, **kwds)
-        if not self._stop: fn(*args, **kwds)
-
     def get(self, *args, **kwds):
-        self.check_permission(self._get, *args, **kwds)
+        self.perform(self._get, *args, **kwds)
 
     def post(self, *args, **kwds):
-        self.check_permission(self._post, *args, **kwds)
+        self.perform(self._post, *args, **kwds)
 
     def _check_permission_hierarchy(self):
         """Check permission of the object and all its ancestors.
@@ -113,18 +109,16 @@ class RequestHandler(webapp2.RequestHandler):
         """
         hierarchy = inspect.getmro(type(self))
         for cls in hierarchy:
-            try:
-                if cls._check_permission(self) == False:
+            if hasattr(cls, "_check_permission") and (cls._check_permission(self) == False):
                     return False
-            except AttributeError:
-                pass
         return True
 
 
-    def check_permission(self, fn, *args, **kwds):
-        """Performs page-level permission checking."""
+    def perform(self, fn, *args, **kwds):
+        """Performs the work, including handler_init, permission checking and execute the get/post method."""
+        self._handler_init(*args, **kwds)
         if self._check_permission_hierarchy():
-            self._handler_method_run(fn, *args, **kwds)
+            if not self._stop: fn(*args, **kwds)
         else:
             values = {
                     "message": _(u"You are not allowed to access this page."),

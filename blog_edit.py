@@ -19,8 +19,7 @@ from blog import BlogModel
 def can_user_edit_post(handler, model):
     return (
             (   handler.current_user_check_permission("edit_own_blog")
-                and
-                handler.logged_in() and (handler.get_current_user().key == model.author)
+                and (handler.get_current_user().key == model.author)
             )
             or handler.current_user_check_permission("edit_all_blog")
         )
@@ -53,7 +52,8 @@ class BlogEditHandler(RequestHandler):
                 blogid = self._blog.key.id()
             else:
                 self._blog = BlogModel(title="", content="")
-                self._blog.author = self.get_current_user().key
+                if self.logged_in():
+                    self._blog.author = self.get_current_user().key
         self._blogid = blogid
 
 
