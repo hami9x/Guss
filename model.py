@@ -15,6 +15,7 @@
 from google.appengine.ext import ndb
 import validators
 import hashlib
+import inspect
 
 class UnsavedProperty(object):
     _value = None
@@ -116,7 +117,11 @@ class FormModel(ndb.Model):
         return {}
 
     def validate(self):
-        field_dict = self._validation()
+        field_dict = {}
+        for cls in inspect.getmro(type(self)):
+            if hasattr(cls, "_validation"):
+                field_dict.update(cls._validation(self))
+            else: break
         for field, v_dict in field_dict.iteritems():
             for method, params in v_dict.iteritems():
                 if not isinstance(params, tuple):

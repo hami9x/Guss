@@ -23,16 +23,18 @@ import rbac
 import inspect
 
 class JinjaEnv(jinja2.Environment):
-    def __init__(self):
+    def __init__(self, handler):
         super(JinjaEnv, self).__init__(
             extensions=['jinja2.ext.i18n'],
             loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates"))
             )
         self.install_gettext_translations(i18n, newstyle=True)
         self.globals["getattr"] = getattr
+        self.globals["form_getattr"] = lambda model, attr: getattr(model, attr) if getattr(model, attr) != None else ""
         def raise_exception(message):
             raise Exception(message)
         self.globals["raise_exception"] = raise_exception
+        self.globals["site"] = handler
 
     def render(self, name, values={}):
         return self.get_template(name+".html").render(values)
@@ -40,7 +42,7 @@ class JinjaEnv(jinja2.Environment):
 class RequestHandler(webapp2.RequestHandler):
     def __init__(self, *args, **kwds):
         self._stop = False
-        self._template = JinjaEnv()
+        self._template = JinjaEnv(self)
         webapp2.RequestHandler.__init__(self, *args, **kwds)
 
     def get_config(self, key): config.get_config(key)

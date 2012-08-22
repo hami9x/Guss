@@ -16,8 +16,8 @@
 
 {% macro input(model, field, type="text") %}
     <input type="{{ type }}" name="{{ field }}" id="{{ field }}" class="form-input-field"
-    value= "{% if (type!="password") and (getattr(model, field) != None) -%}
-                    {{ getattr(model, field) }}
+    value= "{% if (type!="password") -%}
+                    {{ form_getattr(model, field) }}
             {%- else %}{% endif -%}"
             {% if caller is defined %} {{ caller() }} {% endif %}
     />
@@ -33,7 +33,7 @@
 {% endmacro %}
 
 {% macro textarea(model, field) %}
-    <textarea name="{{ field }}" id="{{ field }}">{{ getattr(model, field) }}</textarea>
+    <textarea name="{{ field }}" id="{{ field }}">{{ form_getattr(model, field) }}</textarea>
 {% endmacro %}
 
 {% macro textarea_field(model, field) %}

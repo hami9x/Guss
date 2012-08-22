@@ -28,6 +28,13 @@ class DummyModel(model.FormModel):
                 "b": {"word": ()},
                 }
 
+class DummyChild(DummyModel):
+    c = ndb.StringProperty()
+    def _validation(self):
+        return {
+                "c": {"required": ()},
+                }
+
 class TestUnsavedProperty(unittest.TestCase):
     def setUp(self):
         self.model = DummyModel()
@@ -41,12 +48,18 @@ class TestModel(unittest.TestCase):
     def setUp(self):
         self.model = DummyModel(a="****", b=".....")
         self.model2 = DummyModel(a="dkdkf", b="kdkkdf")
+
     def test_validation(self):
         self.assertEqual(self.model.validate(), False)
         self.assertEqual(len(self.model.get_errors()), 2)
 
         self.assertEqual(self.model2.validate(), True)
         self.assertEqual(self.model2.get_errors(), {})
+
+        c = DummyChild(c="df", a="")
+        self.assertEqual(c.validate(), False)
+        c = DummyChild(c="df", a="kkdf", b="dfdf")
+        self.assertEqual(c.validate(), True)
 
     def test_verbose_name(self):
         self.model = DummyModel(a="****", b=".....")

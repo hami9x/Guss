@@ -14,32 +14,28 @@
 
 from google.appengine.ext import ndb
 from webapp2_extras.i18n import _lazy as _
-import model
-import utils
+import post
 
-class BlogModel(model.FormModel):
-    author = ndb.KeyProperty()
-    created = ndb.DateTimeProperty(auto_now_add=True)
-    title = ndb.StringProperty(verbose_name=_("Title"))
-    content = ndb.TextProperty(verbose_name=_("Content"))
-    slug = ndb.StringProperty()
+class BlogModel(post.MasterPostModel):
+    def get_slaves(self):
+        return CommentModel.query(ancestor=self.key).fetch(50)
 
-    def display_author(self):
-        return self.author.get().username
+class CommentModel(post.SlavePostModel):
+    pass
 
-    def display_created(self):
-        return "%d/%d/%d" % (self.created.day, self.created.month, self.created.year)
+class GuestAuthorModel(post.SlavePostModel):
+    """Model for comments of anonymous users."""
+    username = ndb.StringProperty(verbose_name=_("Name"))
+    email = ndb.StringProperty(verbose_name=_("Email"))
+    website = ndb.StringProperty(verbose_name=_("Website"))
 
     def _validation(self):
         return {
-                "title": {
-                    "max_length": (120,),
+                "username": {
+                    "required": (),
+                    },
+                "email": {
+                    "email": (),
                     "required": (),
                     },
                 }
-
-    def make_slug(self):
-        self.slug = utils.slugify(self.title)
-        count = BlogModel.query(BlogModel.slug == self.slug).count()
-        if count > 0:
-            self.slug += "-%d" % (count+1)

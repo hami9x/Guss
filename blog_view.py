@@ -12,14 +12,27 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from google.appengine.ext import ndb
 from webapp2_extras.i18n import _
 from requesthandler import RequestHandler
 import blog_edit
+import blog
 from blog import BlogModel
 
 class BlogViewHandler(RequestHandler):
     def _check_permission(self):
         return self.current_user_check_permission("view_blog")
+
+    def _render_view(self, post, slug, comment_model=None, guest_comment_model=None):
+        """Don't-Repeat-Yourself helper"""
+        return self.render("blog_view", {
+            "model": post,
+            "can_edit": lambda: blog_edit.can_user_edit_post(self, post),
+            "edit_url": self.uri_for("blog-edit", slug=slug),
+            "comments": post.get_slaves(),
+            "comment_model": blog.CommentModel() if comment_model == None else comment_model,
+            "guest_comment_model": blog.GuestAuthorModel() if guest_comment_model == None else guest_comment_model,
+            })
 
     def _get(self, slug=""):
         blg = BlogModel.query(BlogModel.slug == slug).get()
@@ -28,8 +41,25 @@ class BlogViewHandler(RequestHandler):
                 "message": _(u"This blog post does not exist."),
                 })
         else:
-            return self.render("blog_view", {
-                "model": blg,
-                "can_edit": lambda: blog_edit.can_user_edit_post(self, blg),
-                "edit_url": self.uri_for("blog-edit", slug=slug),
-                })
+            self._render_view(blg, slug)
+
+    def _post(self, slug=""):
+        post = BlogModel.get_by_id(int(self.request.get("__master")))
+        @ndb.transactional
+        def comments():
+            guest_author = None; comment = None
+            guest_ok = True
+            if not self.logged_in():
+                guest_author = blog.GuestAuthorModel(parent=post.key)
+                guest_author.assign(self)
+                if guest_author.validate():
+                    guest_author.put()
+                else: guest_ok = False
+            author = guest_author.key if guest_author else self.get_current_user().key
+            comment = blog.CommentModel(parent=post.key, content=self.request.get("content"))
+            if comment.validate() and guest_ok:
+                comment.author = author
+                comment.put()
+            return guest_author, comment
+        guest_author, comment = comments()
+        self._render_view(post, slug, comment, guest_author)

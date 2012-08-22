@@ -20,6 +20,11 @@ indexes:
   - name: visible
   - name: name
 
+- kind: SlavePostModel
+  ancestor: yes
+  properties:
+  - name: created
+
 - kind: UserConfirmationModel
   properties:
   - name: username
