@@ -12,16 +12,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import unittest
-from google.appengine.ext import ndb, testbed
-from guss import validators
+from google.appengine.ext import ndb
+from guss import utest, validators
 from guss.validators import ValidationError as VE
 
-class TestValidators(unittest.TestCase):
+class TestValidators(utest.TestCase):
     def setUp(self):
-        self.testbed = testbed.Testbed()
-        self.testbed.activate()
-        self.testbed.init_datastore_v3_stub()
+        self.init_db_stub()
 
     def test_word(self):
         validators.validate_word("dkk9fkk7_kk")

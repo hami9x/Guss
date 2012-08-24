@@ -12,11 +12,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import unittest
-from google.appengine.ext import testbed
-from guss import user, rbac
+from guss import utest, user, rbac
 from guss.requesthandler import RequestHandler
-import install
+from guss import install
+
 class Data:
     @classmethod
     def init(cls):
@@ -51,11 +50,9 @@ class Dummy(RequestHandler):
     def _get(self):
         assert self.a == "123"
 
-class RequestHandlerTest(unittest.TestCase):
+class RequestHandlerTest(utest.TestCase):
     def setUp(self):
-        self.testbed = testbed.Testbed()
-        self.testbed.activate()
-        self.testbed.init_datastore_v3_stub()
+        self.init_db_stub()
         install.install_rbac()
         Data.init()
 

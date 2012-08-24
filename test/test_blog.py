@@ -12,15 +12,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import unittest
-from google.appengine.ext import testbed
-from guss import blog
+from guss import utest, blog
 
-class TestBlog(unittest.TestCase):
+class TestBlog(utest.TestCase):
     def setUp(self):
-        self.testbed = testbed.Testbed()
-        self.testbed.activate()
-        self.testbed.init_datastore_v3_stub()
+        self.init_db_stub()
 
     def test_make_slug(self):
         blg = blog.BlogModel(title="Just Test")

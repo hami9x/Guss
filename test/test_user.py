@@ -13,16 +13,12 @@
 #   limitations under the License.
 
 import webapp2
-import unittest
-from google.appengine.ext import testbed
 from google.appengine.ext import ndb
-from guss import user
+from guss import utest, user
 
-class TestUser(unittest.TestCase):
+class TestUser(utest.TestCase):
     def setUp(self):
-        self.testbed = testbed.Testbed()
-        self.testbed.activate()
-        self.testbed.init_datastore_v3_stub()
+        self.init_db_stub()
         model = user.UserModel(username="testguy", password="testpass1", email="testemail@gmail.com", verified=True)
         self.testguy_key = model.put(force_validation=False);
         model = user.UserModel(username="unverifiedguy", password="testpass2",

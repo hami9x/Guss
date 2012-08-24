@@ -12,16 +12,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import unittest
-from google.appengine.ext import testbed
-from guss import rbac, user, install
+from guss import utest, rbac, user, install
 
 #Role-based access control test case
-class TestRBAC(unittest.TestCase):
+class TestRBAC(utest.TestCase):
     def setUp(self):
-        self.testbed = testbed.Testbed()
-        self.testbed.activate()
-        self.testbed.init_datastore_v3_stub()
+        self.init_db_stub()
         install.install_rbac();
         self.user = user.UserModel(username="idiot", email="genius@gmail.com")
         self.user_key = self.user.put(force_validation=False)

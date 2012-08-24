@@ -12,15 +12,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import unittest
-from google.appengine.ext import testbed
-from guss import config
+from guss import utest, config
 
-class TestUser(unittest.TestCase):
+class TestUser(utest.TestCase):
     def setUp(self):
-        self.testbed = testbed.Testbed()
-        self.testbed.activate()
-        self.testbed.init_datastore_v3_stub()
+        self.init_db_stub()
 
     def test_update_get_config(self):
         config.update_config("testname", "testvalue", True)

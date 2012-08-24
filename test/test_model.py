@@ -12,9 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import unittest
 from google.appengine.ext import ndb
-from guss import model
+from guss import utest, model
 
 class DummyModel(model.FormModel):
     a = ndb.StringProperty(verbose_name="AAAA")
@@ -35,7 +34,7 @@ class DummyChild(DummyModel):
                 "c": {"required": ()},
                 }
 
-class TestUnsavedProperty(unittest.TestCase):
+class TestUnsavedProperty(utest.TestCase):
     def setUp(self):
         self.model = DummyModel()
 
@@ -44,7 +43,7 @@ class TestUnsavedProperty(unittest.TestCase):
         self.model.c = "a value"
         self.assertEqual(self.model.get_verbose_name("c"), "This is a name")
 
-class TestModel(unittest.TestCase):
+class TestModel(utest.TestCase):
     def setUp(self):
         self.model = DummyModel(a="****", b=".....")
         self.model2 = DummyModel(a="dkdkf", b="kdkkdf")

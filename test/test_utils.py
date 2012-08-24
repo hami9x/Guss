@@ -12,10 +12,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import unittest
-from guss import utils
+from guss import utest, utils
 
-class TestUtils(unittest.TestCase):
+class TestUtils(utest.TestCase):
     def test_slugify(self):
         self.assertEqual(utils.slugify(u"abc đè"), "abc-de")
         self.assertEqual(utils.slugify("^^^"), "untitled")
