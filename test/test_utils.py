@@ -12,9 +12,47 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from google.appengine.ext import ndb
 from guss import utest, utils
+import time
 
 class TestUtils(utest.TestCase):
+    def setUp(self):
+        self.init_db_stub()
+
     def test_slugify(self):
         self.assertEqual(utils.slugify(u"abc đè"), "abc-de")
         self.assertEqual(utils.slugify("^^^"), "untitled")
+
+    def test_pagination(self):
+        class DummyModel(ndb.Model):
+            created = ndb.DateTimeProperty(auto_now_add=True)
+            num = ndb.IntegerProperty()
+        for i in range(20):
+            m = DummyModel(num=i)
+            m.put()
+            time.sleep(0.05)
+        pagin = utils.NextPrevPagination(model_cls=DummyModel,
+                order="created",
+                limit=10
+                )
+        self.assertEqual(len(pagin.items()), 10)
+        self.assertEqual(pagin.items()[0].num, 0)
+        self.assertEqual(pagin.prev_cursor_str(), "")
+        self.assertEqual(pagin.has_prev(), False)
+        ncursor = pagin.next_cursor_str()
+        self.assertEqual(pagin.has_next(), True)
+        self.assertNotEqual(ncursor, "")
+        pagin2 = utils.NextPrevPagination(model_cls=DummyModel,
+                order="created",
+                limit=10,
+                cursor_str=ncursor)
+        self.assertEqual(pagin2.items()[0].num, 10)
+        self.assertEqual(pagin2.has_prev(), True)
+        pcursor = pagin2.prev_cursor_str()
+        self.assertNotEqual(pcursor, "")
+        pagin3 = utils.NextPrevPagination(model_cls=DummyModel,
+                order="created",
+                limit=10,
+                cursor_str=pcursor)
+        self.assertEqual(pagin3.items()[0].num, 0)

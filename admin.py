@@ -12,10 +12,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from google.appengine.datastore.datastore_query import Cursor
 from webapp2_extras.i18n import _
 from requesthandler import RequestHandler
 import webapp2
+import utils
 
 
 class AdminRequestHandler(RequestHandler):
@@ -124,10 +124,7 @@ class AdminTableInterface(AdminRequestHandler):
         """Render the inteface."""
         default_limit = self.option("default_limit")
         default_order = self.option("default_order")
-        model_cls = self.option("model_cls")
         props = self.option("props")
-        cursor_str = self.request.get("cursor")
-        cursor = Cursor(urlsafe=cursor_str) if cursor_str else Cursor()
         try:
             limit = int(self.request.get("limit", default_value=default_limit))
         except ValueError:
@@ -135,20 +132,20 @@ class AdminTableInterface(AdminRequestHandler):
         order = self.request.get("order", default_value=default_order)
         if not (order in props):
             order = default_order
-        cls_order = getattr(model_cls, order)
-        rcursor = cursor.reversed()
-        q_forward = model_cls.query().order(cls_order)
-        q_reverse = model_cls.query().order(-cls_order)
-        models, next_cursor, more = q_forward.fetch_page(limit, start_cursor=cursor)
-        unused_models, prev_cursor, unused_prev_more = q_reverse.fetch_page(limit, start_cursor=rcursor)
 
-        def get_current_url(cursor, **kwds):
+        pagin = utils.NextPrevPagination(model_cls=self.option("model_cls"),
+                order=order,
+                limit=limit,
+                cursor_str = self.request.get("cursor")
+                );
+
+        def get_page_url(cursor_str, **kwds):
             """Get the current path with the cursor and the url parameters updated.
             Used for rendering the Next and Previous buttons."""
             params = "?"
             params += "&".join(["%s=%s" % (k, v)
                 for k, v in {
-                    "cursor": cursor.urlsafe(),
+                    "cursor": cursor_str,
                     "limit": str(limit),
                     "order": order,
                     }.iteritems()
@@ -163,15 +160,14 @@ class AdminTableInterface(AdminRequestHandler):
 
         values = {
                 "table_model_attr": table_model_attr,
-                "models": models,
+                "models": pagin.items(),
                 "props": props,
                 "toolbox": self.option("toolbox"),
                 "links": self.option("links"),
                 "operations": self.option("operations"),
-                "has_next": lambda: more,
-                "has_prev": lambda: (cursor != Cursor()) and (prev_cursor != None),
-                "next_url": get_current_url(cursor=next_cursor) if next_cursor else "",
-                "prev_url": get_current_url(cursor=prev_cursor.reversed()) if prev_cursor and cursor else "",
+                "pagin": pagin,
+                "next_url": get_page_url(cursor_str=pagin.next_cursor_str()),
+                "prev_url": get_page_url(cursor_str=pagin.prev_cursor_str()),
                 }
         return self.render("admin_table_interface", values)
 

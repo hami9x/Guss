@@ -30,8 +30,8 @@
         </select>
         <input type="submit" value={{_("Action!") }}>
         <p>
-        {% if has_next() %}<a href="{{ next_url }}">{{_("Next")}}</a>{% endif %}
-        {% if has_prev() %}<a href="{{ prev_url }}">{{_("Previous")}}</a>{% endif %}
+        {% if pagin.has_next() %}<a href="{{ next_url }}">{{_("Next")}}</a>{% endif %}
+        {% if pagin.has_prev() %}<a href="{{ prev_url }}">{{_("Previous")}}</a>{% endif %}
         </p>
     </form>
 {% endblock %}
