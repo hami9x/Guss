@@ -6,7 +6,7 @@
             <li>{{ form.input_field(model, "title") }}</li>
             <li>{{ form.textarea_field(model, "content") }}</li>
         </ul>
-        {% if blogid %}<input type="hidden" name="id" value="{{ blogid }}">{% endif %}
+        {% if blogid %}<input type="hidden" name="__id" value="{{ blogid }}">{% endif %}
         {{ form.submit() }}
     </form>
 {% endblock %}

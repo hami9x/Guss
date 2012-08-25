@@ -33,7 +33,7 @@ class BlogEditHandler(RequestHandler):
 
     def _handler_init(self, slug=""):
         self._blog_slug = slug
-        blogid = self.request.get("blogid")
+        blogid = self.request.get("__id")
         def fn_invalid():
             self.render("noticepage", {
                 "message": _(u"This blog post does not exist."),
@@ -41,7 +41,7 @@ class BlogEditHandler(RequestHandler):
             self.stop()
 
         if blogid:
-            self._blog = BlogModel.get_by_id(blogid)
+            self._blog = BlogModel.get_by_id(int(blogid))
             if self._blog == None:
                 return fn_invalid()
         else:
