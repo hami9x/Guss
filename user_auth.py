@@ -63,7 +63,7 @@ class LoginHandler(RequestHandler):
         return self.redirect(self.uri_for("login")+"?successful=%s&referer=%s" % (str(login), referer))
 
 class LogoutHandler(RequestHandler):
-    def get(self):
+    def post(self):
         self.response.delete_cookie("_")
         self.session["username"] = None
         return self.redirect(self.uri_for("home"))

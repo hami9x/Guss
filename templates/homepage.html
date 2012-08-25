@@ -3,7 +3,9 @@
     {% if user %}
     {{ gettext("hello %(name)s", name=user.username) }}
         <br/>
-        <a href="{{logout_url}}">{{gettext("Logout")}}</a>
+        <form method="post" action="{{logout_url}}">
+            <input type="submit" value="{{gettext("Logout")}}"/>
+        </form>
     {% else %}
         <a href="{{login_url}}">{{gettext("Login")}}</a>
     {% endif %}
