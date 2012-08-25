@@ -15,10 +15,22 @@
 from google.appengine.ext import ndb
 from webapp2_extras.i18n import _lazy as _
 import post
+import utils
+import config
 
 class BlogModel(post.MasterPostModel):
-    def get_slaves(self):
-        return CommentModel.query(ancestor=self.key).fetch(50)
+    def get_slaves_pagination(self, cursor_str):
+        if not hasattr(self, "_slaves_pagin"):
+            self._slaves_pagin = utils.NextPrevPagination(
+                    model_cls=CommentModel,
+                    limit=int(config.get_config("blog_comments_per_page")),
+                    order="created",
+                    cursor_str=cursor_str,
+                    query=CommentModel.query(ancestor=self.key)
+                    )
+            return self._slaves_pagin
+        else:
+            return self._slaves_pagin
 
 class CommentModel(post.SlavePostModel):
     pass

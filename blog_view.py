@@ -15,8 +15,7 @@
 from google.appengine.ext import ndb
 from webapp2_extras.i18n import _
 from requesthandler import RequestHandler
-import blog_edit
-import blog
+import blog, blog_edit
 from blog import BlogModel
 
 class BlogViewHandler(RequestHandler):
@@ -29,7 +28,7 @@ class BlogViewHandler(RequestHandler):
             "model": post,
             "can_edit": lambda: blog_edit.can_user_edit_post(self, post),
             "edit_url": self.uri_for("blog-edit", slug=slug),
-            "comments": post.get_slaves(),
+            "comments_pagin": post.get_slaves_pagination(self.request.get("cursor")),
             "comment_model": blog.CommentModel() if comment_model == None else comment_model,
             "guest_comment_model": blog.GuestAuthorModel() if guest_comment_model == None else guest_comment_model,
             })

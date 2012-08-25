@@ -136,21 +136,8 @@ class AdminTableInterface(AdminRequestHandler):
         pagin = utils.NextPrevPagination(model_cls=self.option("model_cls"),
                 order=order,
                 limit=limit,
-                cursor_str = self.request.get("cursor")
+                cursor_str = self.request.get("cursor"),
                 );
-
-        def get_page_url(cursor_str, **kwds):
-            """Get the current path with the cursor and the url parameters updated.
-            Used for rendering the Next and Previous buttons."""
-            params = "?"
-            params += "&".join(["%s=%s" % (k, v)
-                for k, v in {
-                    "cursor": cursor_str,
-                    "limit": str(limit),
-                    "order": order,
-                    }.iteritems()
-                ])
-            return self.request.path + params
 
         def table_model_attr(model, attr):
             """Help showing content of the columns."""
@@ -166,8 +153,6 @@ class AdminTableInterface(AdminRequestHandler):
                 "links": self.option("links"),
                 "operations": self.option("operations"),
                 "pagin": pagin,
-                "next_url": get_page_url(cursor_str=pagin.next_cursor_str()),
-                "prev_url": get_page_url(cursor_str=pagin.prev_cursor_str()),
                 }
         return self.render("admin_table_interface", values)
 

@@ -24,6 +24,15 @@ class TestUtils(utest.TestCase):
         self.assertEqual(utils.slugify(u"abc đè"), "abc-de")
         self.assertEqual(utils.slugify("^^^"), "untitled")
 
+    def test_page_url_modified(self):
+        class DummyHandler(object):
+            def __init__(self):
+                self.request = lambda: None
+                self.request.url = "http://guco.dz?ok=False"
+        h = DummyHandler()
+        self.assertEqual(utils.page_url_modified(h, "ok", "True"), "http://guco.dz?ok=True")
+        self.assertEqual(utils.page_url_modified(h, "cursor", "ZZZ"), "http://guco.dz?cursor=ZZZ&ok=False")
+
     def test_pagination(self):
         class DummyModel(ndb.Model):
             created = ndb.DateTimeProperty(auto_now_add=True)

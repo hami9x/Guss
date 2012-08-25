@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "utils.html" as utils %}
 {% block body %}
     <form method="post" action="">
         {% for link in links %}
@@ -29,9 +30,6 @@
             {% endfor %}
         </select>
         <input type="submit" value={{_("Action!") }}>
-        <p>
-        {% if pagin.has_next() %}<a href="{{ next_url }}">{{_("Next")}}</a>{% endif %}
-        {% if pagin.has_prev() %}<a href="{{ prev_url }}">{{_("Previous")}}</a>{% endif %}
-        </p>
+        <p>{{ utils.next_prev_navi(pagin) }}</p>
     </form>
 {% endblock %}

@@ -39,6 +39,7 @@ def perform_installation(*args, **kwds):
             ("session_secret_key", utils.generate_random_string(30), False),
             ("admin_email", "admin@gmail.com", True),
             ("user_email_confirm", "no", True),
+            ("blog_comments_per_page", "20", True),
         ]
     for item in conf:
         config.update_config(item[0], item[1], item[2])

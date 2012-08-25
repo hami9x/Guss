@@ -1,0 +1,4 @@
+{% macro next_prev_navi(pagination) %}
+        {% if pagination.has_prev() %}<a href="{{ pagination.prev_page_url(site) }}">{{_("Previous")}}</a>{% endif %}
+        {% if pagination.has_next() %}<a href="{{ pagination.next_page_url(site) }}">{{_("Next")}}</a>{% endif %}
+{% endmacro %}
