@@ -58,12 +58,12 @@ def generate_cookie_token():
     return generate_random_string(50)
 
 """Save userid and the token for cookie validation to the cookie and database"""
-def save_cookie(handler, userkey):
+def save_cookie(handler, userkey, cookie_model=None):
     token = generate_cookie_token()
     cookie_value = userkey.urlsafe() + "|" + token
     expire = datetime.now() + timedelta(days=30)
     handler.response.set_cookie("_", cookie_value, expires = expire, httponly=True, overwrite=True)
-    q = ndb.Key("UserCookieModel", userkey.id()).get()
+    q = cookie_model if cookie_model else ndb.Key("UserCookieModel", userkey.id()).get()
     if not q:
         model = UserCookieModel(id=userkey.id(), token=token)
         model.put()
@@ -93,10 +93,11 @@ def get_current_user(handler):
         if (not q) or (q.token != token):
             return None
         else:
-            q = userkey.get()
+            save_cookie(handler, userkey, q)
+            usr = userkey.get()
             handler.session["userkey"] = key
-            handler.session["username"] = q.username
-            handler.session["email"] = q.email
-            return UserInfo(key, q.username, q.email)
+            handler.session["username"] = usr.username
+            handler.session["email"] = usr.email
+            return UserInfo(key, usr.username, usr.email)
     else:
         return UserInfo(handler.session.get("userkey"), username, handler.session.get("email"))
