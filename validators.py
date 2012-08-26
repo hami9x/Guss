@@ -98,3 +98,14 @@ class UniqueValidator(Validator):
             if (model.key != q.get().key):
                 self._raise()
 validate_unique = UniqueValidator()
+
+class IntegerValidator(Validator):
+    def message(self):
+        return _(u"Must be an integer.")
+
+    def __call__(self, value, **kwds):
+        try:
+            value = int(value)
+        except ValueError:
+            self._raise()
+validate_integer = IntegerValidator()

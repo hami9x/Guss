@@ -23,7 +23,7 @@ class BlogModel(post.MasterPostModel):
         if not hasattr(self, "_slaves_pagin"):
             self._slaves_pagin = utils.NextPrevPagination(
                     model_cls=CommentModel,
-                    limit=int(config.get_config("blog_comments_per_page")),
+                    limit=config.get_config("blog_comments_per_page"),
                     order="created",
                     cursor_str=cursor_str,
                     query=CommentModel.query(ancestor=self.key)

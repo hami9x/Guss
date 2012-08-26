@@ -96,7 +96,12 @@ class RequestHandler(webapp2.RequestHandler):
         return True
 
     def _handler_init(self, *args, **kwds):
-        """To be overridden. This method performs the initialization that runs at the beginning of post() or get()"""
+        """To be overridden. This method performs the initialization that runs before the permission checking step"""
+        pass
+
+    def _handler_init_after_permission(self, *args, **kwds):
+        """To be overridden. This method performs the initialization that runs at the beginning of post() or get(), just
+        after the permission checking step"""
         pass
 
     def get(self, *args, **kwds):
@@ -120,7 +125,9 @@ class RequestHandler(webapp2.RequestHandler):
         """Performs the work, including handler_init, permission checking and execute the get/post method."""
         self._handler_init(*args, **kwds)
         if self._check_permission_hierarchy():
-            if not self._stop: fn(*args, **kwds)
+            if not self._stop:
+                self._handler_init_after_permission(*args, **kwds)
+                fn(*args, **kwds)
         else:
             values = {
                     "message": _(u"You are not allowed to access this page."),

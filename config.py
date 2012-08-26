@@ -43,5 +43,5 @@ def get_config(name):
 
 class ConfigModel(ndb.Model):
     name = ndb.StringProperty()
-    value = ndb.StringProperty()
+    value = ndb.PickleProperty()
     visible = ndb.BooleanProperty()

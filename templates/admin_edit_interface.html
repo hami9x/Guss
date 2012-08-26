@@ -13,7 +13,7 @@
                 {% set p_options = options[prop] if prop in options else {} %}
                 <li>
                     {{ form.field_label(model, prop) }}:
-                    {% if prop_type in ["unicode", "str"] %}
+                    {% if prop_type in ["unicode", "str", "int"] %}
                         {% set type = p_options.get("type", "input") %}
                         {% if type == "input" %}
                             {{ form.input(model, prop, p_options.get("input_type", "text")) }}
