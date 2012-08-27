@@ -70,7 +70,7 @@ class BlogEditHandler(RequestHandler):
         if blog.validate():
             if not blog.slug:
                 blog.make_slug()
-                blog.put()
+            blog.put()
 
         values = {
                 "model": blog,

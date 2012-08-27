@@ -110,7 +110,6 @@ class FormModel(ndb.Model):
     _validated = False
 
     def __init__(self, *args, **kwds):
-        import logging; logging.info(type(self).__name__)
         super(FormModel, self).__init__(*args, **kwds)
         self.validations = ValidationEngine(self)
 

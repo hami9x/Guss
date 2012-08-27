@@ -3,10 +3,21 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         {% block head %}
+            <link rel="stylesheet" href="/css/jui_theme/jquery-ui-1.8.23.custom.css" />
+            <link rel="stylesheet" href="/css/font-awesome.css" />
+            <link rel="stylesheet" href="/css/style.css" />
         {% endblock %}
     </head>
     <body>
         {% block body %}
+        {% endblock %}
+
+        {% block js %}
+            <script src="/js/libs/jquery.min.js"></script>
+            <script src="/js/libs/jquery-ui.min.js"></script>
+            <script src="/js/hallojs/examples/hallo-min.js"></script>
+            <script src="/js/common.js"></script>
+            <script src="/js/hallojs/deps/rangy-core-1.2.3.js"></script>
         {% endblock %}
     </body>
 </html>

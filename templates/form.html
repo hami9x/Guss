@@ -42,6 +42,17 @@
     {{ v_e(model, field) }}
 {% endmacro %}
 
+{% macro content_edit_field(model, field, id="content-edit") %}
+    <div class="content-edit-wrapper">
+        <div class="content-edit" id="{{ id }}">
+            {{ form_getattr(model, field) }}
+        </div>
+        <input type="hidden" id="hidden" name="{{ field }}" value=""/>
+    </div>
+    {{ v_e(model, field) }}
+    <noscript>You must have javascript enabled to use this edit field.</noscript>
+{% endmacro %}
+
 {% macro submit(value="Submit") %}
     {% set value= _(value) %}
     <input type="submit" value="{{ value }}"/>

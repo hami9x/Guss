@@ -10,3 +10,7 @@
 	path = unidecode
 	url = https://github.com/phaikawl-submodule-repos/unidecode.git
     ignore = dirty
+[submodule "js/hallojs"]
+	path = js/hallojs
+    ignore = dirty
+	url = https://github.com/phaikawl/hallo.git

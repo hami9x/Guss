@@ -19,10 +19,12 @@ api_version: 1
 threadsafe: true
 
 handlers:
-- url: /stylesheets
-  static_dir: stylesheets
+- url: /css
+  static_dir: css
 - url: /js
   static_dir: js
+- url: /font
+  static_dir: font
 - url: /test.*
   script: gaeunit.app
 - url: /install.*

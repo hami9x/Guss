@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% import "form.html" as form %}
 {% block body %}
-    <form method="post" action="">
+    <form method="post" action="" id="content-edit-form">
         <ul>
             <li>{{ form.input_field(model, "title") }}</li>
-            <li>{{ form.textarea_field(model, "content") }}</li>
+            <li>{{ form.content_edit_field(model, "content") }}</li>
+            <li>{{ form.submit() }}</li>
         </ul>
         {% if blogid %}<input type="hidden" name="__id" value="{{ blogid }}">{% endif %}
-        {{ form.submit() }}
     </form>
 {% endblock %}
