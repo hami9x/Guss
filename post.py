@@ -7,7 +7,7 @@ class PostModel(model.FormModel):
     """Common base for all kinds of user content, including blog, forum posts, comments..."""
     author = ndb.KeyProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
-    content = ndb.TextProperty(verbose_name=_("Content"))
+    content = model.EscapedHtmlProperty(verbose_name=_("Content"))
 
     def display_author(self):
         return self.author.get().username
@@ -20,6 +20,7 @@ class MasterPostModel(PostModel):
     title = ndb.StringProperty(verbose_name=_("Title"))
     slug = ndb.StringProperty()
     slave_count = ndb.IntegerProperty()
+    content = model.FilteredHtmlProperty(verbose_name=_("Content"))
 
     def _validation(self):
         return {

@@ -12,10 +12,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+import hashlib, inspect, cgi
+from lxml.html.clean import Cleaner
 from google.appengine.ext import ndb
 import validators
-import hashlib
-import inspect
 
 class UnsavedProperty(object):
     _value = None
@@ -53,6 +53,14 @@ class BooleanProperty(ndb.BooleanProperty):
 class IntegerProperty(ndb.IntegerProperty):
     def _validate(self, value):
         return int(value)
+
+class EscapedHtmlProperty(ndb.TextProperty):
+    def _to_base_type(self, value):
+        return cgi.escape(value)
+
+class FilteredHtmlProperty(ndb.TextProperty):
+    def _to_base_type(self, value):
+        return Cleaner(add_nofollow=True).clean_html(value)
 
 class MyMetaModel(ndb.MetaModel):
     def __init__(cls, name, bases, classdict):
