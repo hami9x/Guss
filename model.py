@@ -50,9 +50,12 @@ class BooleanProperty(ndb.BooleanProperty):
         assert type(value) == bool
         return value
 
-class IntegerProperty(ndb.IntegerProperty):
-    def _validate(self, value):
+class IntegerStringProperty(ndb.IntegerProperty):
+    def _to_base_type(self, value):
         return int(value)
+
+    def _validate(self, value):
+        pass
 
 class EscapedHtmlProperty(ndb.TextProperty):
     def _to_base_type(self, value):

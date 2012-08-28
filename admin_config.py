@@ -34,7 +34,7 @@ class AdminConfigHandler(admin.AdminEditInterface):
         for conf in q:
             ty = type(conf.value)
             if ty == int:
-                prop_type = model.IntegerProperty
+                prop_type = model.IntegerStringProperty
                 validators[conf.name] = {"integer": ()}
             elif ty == bool:
                 prop_type = model.BooleanProperty
@@ -45,9 +45,8 @@ class AdminConfigHandler(admin.AdminEditInterface):
             if get_val: conf.value = get_val
             iterlist.append(conf)
 
+        fake_mclass._validation = lambda obj: validators
         self.model = model.MyMetaModel(fake_mclass.__name__, fake_mclass.__bases__, dict(fake_mclass.__dict__))()
-        import logging; logging.info(self.model.__class__.__name__)
-        self.model._validation = lambda: validators
         for conf in iterlist:
             setattr(self.model, conf.name, conf.value)
         self._all_config = iterlist

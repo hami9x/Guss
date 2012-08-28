@@ -58,3 +58,7 @@ class TestValidators(utest.TestCase):
                                                                   ##the new model and the saved one are the same
         mod2 = DummyModel(prop="abc")
         self.assertRaises(VE, validators.validate_unique, "abc", mod2, field="prop")
+
+    def test_integer(self):
+        validators.validate_integer("123")
+        self.assertRaises(VE, validators.validate_integer, "abc")

@@ -4,20 +4,28 @@
     {% set errors = model.get_errors() %}
     {% if field in errors %}
         {% for msg in errors[field] %}
-                {{ msg }};
+                <small class="error">{{ msg }}</small>
         {% endfor %}
     {% endif %}
     </div>
 {% endmacro %}
 
+{% macro error_class(model, field) %}
+    {% if model.get_errors().get(field) %}
+        error
+    {% endif %}
+{% endmacro %}
+
 {% macro field_label(model, field, show_optional=True) %}
-    <label class="form-field-label" for="{{ field }}">{{ model.get_verbose_name(field) }}
+    <label class="form-field-label {{ error_class(model, field) }}" for="{{ field }}">
+        {{ model.get_verbose_name(field) }}
         {%- if show_optional and not model.is_required(field) %} {{ _("(Optional)") }} {% endif -%}
     </label>
 {% endmacro %}
 
 {% macro input(model, field, type="text") %}
-    <input type="{{ type }}" name="{{ field }}" id="{{ field }}" class="form-input-field"
+    <input type="{{ type }}" name="{{ field }}" id="{{ field }}"
+        class="form-input-field {{ error_class(model, field) }}"
     value= "{% if (type!="password") -%}
                     {{ form_getattr(model, field) }}
             {%- else %}{% endif -%}"
@@ -34,7 +42,10 @@
 {% endmacro %}
 
 {% macro textarea(model, field) %}
-    <textarea name="{{ field }}" id="{{ field }}">{{ form_getattr(model, field) }}</textarea>
+    <textarea name="{{ field }}" id="{{ field }}"
+    class="{{ error_class(model, field) }}">
+        {{ form_getattr(model, field) }}
+    </textarea>
 {% endmacro %}
 
 {% macro textarea_field(model, field) %}
