@@ -42,11 +42,3 @@ Copyright 2012 Hai Thanh Nguyen
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
-## Things that powered this software:
-* Python programming language
-* Google App Engine and the webapp2 framework - http://appengine.google.com
-* Jinja2 Template Engine - https://jinja.pocoo.org
-* Hallo rich text editor - http://hallojs.org
-* Font Awesome - http://fortawesome.github.com/Font-Awesome
-* Zurb Foundation layout framework - http://foundation.zurb.com
