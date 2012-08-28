@@ -1,0 +1,10 @@
+- RBAC: optimize it with memcache
+- Blog previewing before posting
+- Blog custom slug field
+
+Unimplemented features:
+- RBAC permission editting interface
+- Forum system
+- User profile, user status, activity stream, private messaging, user connection/following...
+And... others ^^!
+Actually, to much to list.
