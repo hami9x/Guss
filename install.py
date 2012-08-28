@@ -15,7 +15,7 @@
 import webapp2
 from webapp2_extras.i18n import _
 from user import UserModel
-import utils, config, rbac, rbac_setup
+import config, config_setup, rbac, rbac_setup
 
 def install_rbac():
     rbac_setup.register_permissions()
@@ -32,15 +32,8 @@ def perform_installation(*args, **kwds):
         rbac.add_role(model.key, rbac.default_role("super_admin"))
 
     #Configurations
-    conf = [
-            ("site_name", "Name", True),
-            ("session_secret_key", utils.generate_random_string(30), False),
-            ("admin_email", "admin@gmail.com", True),
-            ("user_email_confirm", False, True),
-            ("blog_comments_per_page", 20, True),
-        ]
-    for item in conf:
-        config.update_config(item[0], item[1], item[2])
+    for item in config_setup.default_configs():
+        config.update_config(item.name, item.default_value, item.visible)
 
 class InstallHandler(webapp2.RequestHandler):
     def get(self):

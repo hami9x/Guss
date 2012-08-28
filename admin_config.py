@@ -12,9 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from config import update_config_cache, ConfigModel
-from google.appengine.ext import ndb
-import admin, model
+import admin, model, config, config_setup
 
 class FakeModel(model.FormModel):
     pass
@@ -24,37 +22,27 @@ class AdminConfigHandler(admin.AdminEditInterface):
         return self.current_user_check_permission("config")
 
     def get_all_visible_config(self):
-        return ConfigModel.query(ConfigModel.visible==True).order(ConfigModel.name)
+        return config.ConfigModel.query(config.ConfigModel.visible==True).order(config.ConfigModel.name)
 
     def _handler_init_after_permission(self):
-        q = self.get_all_visible_config()
+        self.configs_db = self.get_all_visible_config()
+        configs = config_setup.default_configs()
         fake_mclass = FakeModel
         validators = {}
-        iterlist = []
-        for conf in q:
-            ty = type(conf.value)
-            if ty == int:
-                prop_type = model.IntegerStringProperty
-                validators[conf.name] = {"integer": ()}
-            elif ty == bool:
-                prop_type = model.BooleanProperty
-            else:
-                prop_type = ndb.StringProperty
-            setattr(fake_mclass, conf.name, prop_type())
-            get_val = self.request.get(conf.name)
-            if get_val: conf.value = get_val
-            iterlist.append(conf)
+        for conf in configs:
+            if conf.visible:
+                validators[conf.name] = conf.validation()
+                setattr(fake_mclass, conf.name, conf.prop_class())
 
         fake_mclass._validation = lambda obj: validators
         self.model = model.MyMetaModel(fake_mclass.__name__, fake_mclass.__bases__, dict(fake_mclass.__dict__))()
-        for conf in iterlist:
-            setattr(self.model, conf.name, conf.value)
-        self._all_config = iterlist
+        for conf in self.configs_db:
+            setattr(self.model, conf.name, self.request.get(conf.name) or conf.value)
 
     def _post(self):
         if self.model.validate():
-            for conf in self._all_config:
+            for conf in self.configs_db:
                 conf.value = getattr(self.model, conf.name)
                 conf.put()
-                update_config_cache(conf.name, conf.value)
+                config.update_config_cache(conf.name, conf.value)
         self.render_interface(self.model)

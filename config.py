@@ -14,6 +14,7 @@
 
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
+import model
 
 def update_config_cache(name, value):
     memcache.set("config__"+name, value)
@@ -21,8 +22,8 @@ def update_config_cache(name, value):
 def update_config(name, value, visible):
     q = ConfigModel.query(ConfigModel.name==name).get()
     if not q:
-        model = ConfigModel(name=name, value=value, visible=visible)
-        model.put()
+        ent = ConfigModel(name=name, value=value, visible=visible)
+        ent.put()
         update_config_cache(name, value)
     else:
         q.value = value
@@ -45,3 +46,30 @@ class ConfigModel(ndb.Model):
     name = ndb.StringProperty()
     value = ndb.PickleProperty()
     visible = ndb.BooleanProperty()
+
+class ConfigValue(object):
+    def __init__(self, name, value, visible):
+        self.name = name
+        self.value = value
+        self.visible = visible
+
+    def validation(self):
+        return {}
+
+    def prop_class(self):
+        raise Exception("must be overridden.")
+
+class StringValue(ConfigValue):
+    def prop_class(self):
+        return ndb.StringProperty()
+
+class IntegerValue(ConfigValue):
+    def validation(self):
+        return {"integer": ()}
+
+    def prop_class(self):
+        return model.IntegerStringProperty()
+
+class BooleanValue(ConfigValue):
+    def prop_class(self):
+        return model.BooleanProperty()
