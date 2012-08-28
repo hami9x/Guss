@@ -13,11 +13,9 @@
 #   limitations under the License.
 
 import webapp2
+from webapp2_extras.i18n import _
 from user import UserModel
-import utils
-import config
-import rbac
-import rbac_setup
+import utils, config, rbac, rbac_setup
 
 def install_rbac():
     rbac_setup.register_permissions()
@@ -29,7 +27,7 @@ def perform_installation(*args, **kwds):
 
     q = UserModel.query(UserModel.username=="admin").get()
     if not q:
-        model = UserModel(username="admin", password="admin", email="admin@gmail.com", verified=True)
+        model = UserModel(username="admin", display_name=_("Admin"), password="admin", email="admin@gmail.com", verified=True)
         model.put(force_validation=False)
         rbac.add_role(model.key, rbac.default_role("super_admin"))
 

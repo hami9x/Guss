@@ -30,7 +30,7 @@ class JinjaEnv(jinja2.Environment):
             )
         self.install_gettext_translations(i18n, newstyle=True)
         self.globals["getattr"] = getattr
-        self.globals["form_getattr"] = lambda model, attr: getattr(model, attr) if getattr(model, attr) != None else ""
+        self.globals["form_getattr"] = lambda model, attr: getattr(model, attr) or ""
         def raise_exception(message):
             raise Exception(message)
         self.globals["raise_exception"] = raise_exception

@@ -10,7 +10,8 @@ class PostModel(model.FormModel):
     content = model.EscapedHtmlProperty(verbose_name=_("Content"))
 
     def display_author(self):
-        return self.author.get().username
+        q = self.author.get()
+        return q.display_name or q.username
 
     def display_created(self):
         return "%d/%d/%d" % (self.created.day, self.created.month, self.created.year)

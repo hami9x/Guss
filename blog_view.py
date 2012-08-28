@@ -29,8 +29,8 @@ class BlogViewHandler(RequestHandler):
             "can_edit": lambda: blog_edit.can_user_edit_post(self, post),
             "edit_url": self.uri_for("blog-edit", slug=slug),
             "comments_pagin": post.get_slaves_pagination(self.request.get("cursor")),
-            "comment_model": blog.CommentModel() if comment_model == None else comment_model,
-            "guest_comment_model": blog.GuestAuthorModel() if guest_comment_model == None else guest_comment_model,
+            "comment_model": comment_model or blog.CommentModel(),
+            "guest_comment_model": guest_comment_model or blog.GuestAuthorModel(),
             })
 
     def _get(self, slug=""):
@@ -59,6 +59,8 @@ class BlogViewHandler(RequestHandler):
             if comment.validate() and guest_ok:
                 comment.author = author
                 comment.put()
-            return guest_author, comment
+                return None, None
+            else:
+                return guest_author, comment
         guest_author, comment = comments()
         self._render_view(post, slug, comment, guest_author)

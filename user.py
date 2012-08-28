@@ -20,11 +20,12 @@ import model
 
 class UserModel(model.FormModel):
     username = ndb.StringProperty(verbose_name=_(u"Username"))
+    display_name = ndb.StringProperty(verbose_name=_(u"Display Name"))
     password = model.PasswordProperty(verbose_name=_(u"Password"))
     email = ndb.StringProperty(verbose_name=_(u"Email"))
     created = ndb.DateTimeProperty(auto_now_add=True)
     verified = model.BooleanProperty(verbose_name=_(u"Verified"))
-    _password_confirm = model.UnsavedProperty(verbose_name=_(u"Confirm password"))
+    _password_confirm = model.UnsavedProperty(verbose_name=_(u"Confirm Password"))
 
     def __init__(self, *args, **kwds):
         super(UserModel, self).__init__(*args, **kwds)
@@ -32,6 +33,7 @@ class UserModel(model.FormModel):
     def _validation(self):
         return {
                 "username": {"required": (), "word": (), "unique": ()},
+                "display_name": {"required": ()},
                 "email": {"required": (), "email": (), "unique": ()},
                 "password": {"required": (), "password": (), "min_length": (8,)},
                 "_password_confirm": {"required": (), "confirm_password": (self.password,)},

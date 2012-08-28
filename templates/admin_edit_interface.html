@@ -5,11 +5,6 @@
         <ul>
             {% for prop, val in props.iteritems() %}
                 {% set prop_type = val.__class__.__name__ %}
-                {#{% if prop in options %}#}
-                    {#{% set p_options = options[prop] %}#}
-                {#{% else %}#}
-                    {#{% set p_options = {} %}#}
-                {#{% endif %}#}
                 {% set p_options = options[prop] if prop in options else {} %}
                 <li>
                     {{ form.field_label(model, prop, False) }}

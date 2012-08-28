@@ -44,7 +44,7 @@
 {% macro textarea(model, field) %}
     <textarea name="{{ field }}" id="{{ field }}"
     class="{{ error_class(model, field) }}">
-        {{ form_getattr(model, field) }}
+        {{- form_getattr(model, field) -}}
     </textarea>
 {% endmacro %}
 
