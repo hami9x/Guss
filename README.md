@@ -19,7 +19,7 @@ Built for Google App Engine. This is a codebase that aims to provide a bunch of 
     * A blogging system for members.
     * A discussion system that both serves as a blog commenting and a simple forum system.
     * User authentication, member profile, activity stream, private messaging and user connection/following (basic functionalities for a community).
-    * It looks disgusting without a design, so a basic design based on Twitter Bootstrap or Zurb Foundation would be great. Doesn't need to be beautiful though.
+    * It looks disgusting without a design, so a basic design based on Zurb Foundation would be great. Doesn't need to be beautiful though.
 
 ## Contributing:
 1. Install Google App Engine SDK.

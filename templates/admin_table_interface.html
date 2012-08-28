@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% import "utils.html" as utils %}
+{% import "form.html" as form %}
 {% block body %}
-    <form method="post" action="">
+    <form method="post" action="" class="custom">
         {% for link in links %}
             <a href="{{ link[1] }}">{{ link[0] }}</a>
         {% endfor %}
@@ -29,7 +30,7 @@
                 <option name="{{ operation[0] }}">{{ operation[1] }}</option>
             {% endfor %}
         </select>
-        <input type="submit" value={{_("Action!") }}>
+        {{ form.submit("Action!") }}
         <p>{{ utils.next_prev_navi(pagin) }}</p>
     </form>
 {% endblock %}

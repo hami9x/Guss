@@ -1,4 +1,6 @@
 $(document).ready(function() {
+    $(document).foundationCustomForms();
+
     $("#content-edit-form div.content-edit").hallo({
         plugins: {
             "halloformat": {
@@ -10,7 +12,7 @@ $(document).ready(function() {
                 }
             }
         },
-        toolbar: "halloToolbarFixed"
+        toolbar: "halloToolbarContextual"
     });
 
     $("#content-edit-form").submit(function(e) {
@@ -19,4 +21,4 @@ $(document).ready(function() {
         var hidden = wrapper.find("#hidden");
         hidden.val(wrapper.find("div.content-edit").html());
     });
-})
+});

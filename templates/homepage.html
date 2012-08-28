@@ -4,9 +4,9 @@
     {{ gettext("hello %(name)s", name=user.username) }}
         <br/>
         <form method="post" action="{{logout_url}}">
-            <input type="submit" value="{{gettext("Logout")}}"/>
+            <input type="submit" class="button" value="{{gettext("Logout")}}"/>
         </form>
     {% else %}
-        <a href="{{login_url}}">{{gettext("Login")}}</a>
+        <a href="{{login_url}}" class="button">{{gettext("Login")}}</a>
     {% endif %}
 {% endblock %}

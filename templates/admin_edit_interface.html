@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% import "form.html" as form %}
 {% block body %}
-    <form action="" method="post">
+    <form class="custom" action="" method="post">
         <ul>
             {% for prop, val in props.iteritems() %}
                 {% set prop_type = val.__class__.__name__ %}
@@ -12,7 +12,7 @@
                 {#{% endif %}#}
                 {% set p_options = options[prop] if prop in options else {} %}
                 <li>
-                    {{ form.field_label(model, prop) }}:
+                    {{ form.field_label(model, prop, False) }}
                     {% if prop_type in ["unicode", "str", "int"] %}
                         {% set type = p_options.get("type", "input") %}
                         {% if type == "input" %}
@@ -23,7 +23,7 @@
                             {{ raise_exception("the prop type is invalid") }}
                         {% endif %}
                     {% elif prop_type == "bool" %}
-                        {{ form.boolean_combo(prop) }}
+                        {{ form.boolean_combo(model, prop) }}
                     {% endif %}
                     {{ form.v_e(model, prop) }}
                 </li>

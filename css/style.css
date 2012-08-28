@@ -1,15 +1,47 @@
-.content-edit {
-    width: 80%;
-    border: medium dashed black;
-    margin: 30px 5px 30px 5px;
-    padding: 5px;
-    min-height: 300px;
-}
+/* -------------------------------------------------- 
+ *    Table of Contents
+ *    -----------------------------------------------------
+ *    :: Shared Styles
+ *    */
 
+
+    /* -----------------------------------------
+     *    Shared Styles
+     *    ----------------------------------------- */
 form ul {
     list-style-type: none;
 }
 
+
+    /* -----------------------------------------
+     *    Content edit page
+     *    ----------------------------------------- */
 .hallotoolbar .ui-button .ui-button-text {
     line-height: 0.7;
+}
+
+.content-edit {
+    padding: 5px;
+    min-height: 300px;
+    border: 1px solid #CCCCCC;
+    color: rgba(0, 0, 0, 0.75);
+    display: block;
+    font-size: 14px;
+    margin: 0 0 12px;
+    padding: 6px;
+    background: #f2f2f2;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -ms-border-radius: 2px;
+    -o-border-radius: 2px;
+    border-radius: 2px;
+    -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.content-edit:focus {
+    background: none repeat scroll 0 0 #FAFAFA;
+    border-color: #B3B3B3;
+    outline: medium none !important;
 }

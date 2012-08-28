@@ -10,8 +10,10 @@
     </div>
 {% endmacro %}
 
-{% macro field_label(model, field) %}
-    <label class="form-field-label" for="{{ field }}">{{ model.get_verbose_name(field) }}</label>
+{% macro field_label(model, field, show_optional=True) %}
+    <label class="form-field-label" for="{{ field }}">{{ model.get_verbose_name(field) }}
+        {%- if show_optional and not model.is_required(field) %} {{ _("(Optional)") }} {% endif -%}
+    </label>
 {% endmacro %}
 
 {% macro input(model, field, type="text") %}
@@ -21,11 +23,10 @@
             {%- else %}{% endif -%}"
             {% if caller is defined %} {{ caller() }} {% endif %}
     />
-    {%- if not model.is_required(field) %} {{ _("(Optional)") }} {% endif -%}
 {% endmacro %}
 
 {% macro input_field(model, field, type="text") %}
-    {{ field_label(model, field) }}:
+    {{ field_label(model, field) }}
     {% call input(model, field, type) %}
         {% if caller is defined %} {{ caller() }} {% endif %}
     {% endcall %}
@@ -37,7 +38,7 @@
 {% endmacro %}
 
 {% macro textarea_field(model, field) %}
-    {{ field_label(model, field) }}:
+    {{ field_label(model, field) }}
     {{ textarea(model, field) }}
     {{ v_e(model, field) }}
 {% endmacro %}
@@ -55,12 +56,16 @@
 
 {% macro submit(value="Submit") %}
     {% set value= _(value) %}
-    <input type="submit" value="{{ value }}"/>
+    <input type="submit" value="{{ value }}" class="button"/>
 {% endmacro %}
 
-{% macro boolean_combo(field) %}
+{% macro boolean_combo(model, field) %}
     <select name="{{ field }}" id="{{ field }}">
-        <option value="yes">{{ _("Yes") }}</option>
-        <option value="no">{{ _("No") }}</option>
+        <option value="yes" {% if form_getattr(model, field) %} selected="selected" {% endif %}>
+            {{ _("Yes") }}
+        </option>
+        <option value="no" {% if not form_getattr(model, field) %} selected="selected" {% endif %}>
+            {{ _("No") }}
+        </option>
     </select>
 {% endmacro %}
