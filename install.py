@@ -33,7 +33,7 @@ def perform_installation(*args, **kwds):
 
     #Configurations
     for item in config_setup.default_configs():
-        config.update_config(item.name, item.default_value, item.visible)
+        config.update_config(item.name, item.value, item.visible)
 
 class InstallHandler(webapp2.RequestHandler):
     def get(self):

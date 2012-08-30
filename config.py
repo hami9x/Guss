@@ -68,7 +68,7 @@ class IntegerValue(ConfigValue):
         return {"integer": ()}
 
     def prop_class(self):
-        return model.IntegerStringProperty()
+        return model.FormIntegerProperty()
 
 class BooleanValue(ConfigValue):
     def prop_class(self):

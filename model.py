@@ -50,12 +50,18 @@ class BooleanProperty(ndb.BooleanProperty):
         assert type(value) == bool
         return value
 
-class IntegerStringProperty(ndb.IntegerProperty):
-    def _to_base_type(self, value):
-        return int(value)
+class FormIntegerProperty(ndb.IntegerProperty):
+    """Like ndb.IntegerProperty but doesn't raise exception when the value is a wrong string, and this property
+    automatically converts valid integer strings to integer."""
 
     def _validate(self, value):
-        pass
+        try:
+            return int(value)
+        except ValueError:
+            pass
+
+    def _to_base_type(self, value):
+        return int(value)
 
 class EscapedHtmlProperty(ndb.TextProperty):
     def _to_base_type(self, value):
