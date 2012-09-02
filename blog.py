@@ -19,18 +19,16 @@ import utils
 import config
 
 class BlogModel(post.MasterPostModel):
-    def get_slaves_pagination(self, cursor_str):
-        if not hasattr(self, "_slaves_pagin"):
-            self._slaves_pagin = utils.NextPrevPagination(
-                    model_cls=CommentModel,
-                    limit=config.get_config("blog_comments_per_page"),
-                    order="created",
-                    cursor_str=cursor_str,
-                    query=CommentModel.query(ancestor=self.key)
-                    )
-            return self._slaves_pagin
-        else:
-            return self._slaves_pagin
+    """Pagination for comments."""
+    def default_pagination(self, cursor_str=""):
+        self.pagination = utils.NextPrevPagination(
+                model_cls=CommentModel,
+                limit=config.get_config("blog_comments_per_page"),
+                order="created",
+                cursor_str=cursor_str,
+                query=CommentModel.query(ancestor=self.key)
+                )
+        return self.pagination
 
 class CommentModel(post.SlavePostModel):
     pass

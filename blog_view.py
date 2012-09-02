@@ -28,7 +28,7 @@ class BlogViewHandler(RequestHandler):
             "model": post,
             "can_edit": lambda: blog_edit.can_user_edit_post(self, post),
             "edit_url": self.uri_for("blog-edit", slug=slug),
-            "comments_pagin": post.get_slaves_pagination(self.request.get("cursor")),
+            "comments_pagin": post.default_pagination(self.request.get("cursor")),
             "comment_model": comment_model or blog.CommentModel(),
             "guest_comment_model": guest_comment_model or blog.GuestAuthorModel(),
             })

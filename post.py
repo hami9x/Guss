@@ -1,7 +1,6 @@
 from google.appengine.ext import ndb
 from webapp2_extras.i18n import _lazy as _
-import model
-import utils
+import model, utils
 
 class PostModel(model.FormModel):
     """Common base for all kinds of user content, including blog, forum posts, comments..."""
@@ -20,8 +19,12 @@ class MasterPostModel(PostModel):
     """Base class for posts that make a new "topic", such as blog entries, and the forum posts that starts a thread."""
     title = ndb.StringProperty(verbose_name=_("Title"))
     slug = ndb.StringProperty()
-    slave_count = ndb.IntegerProperty()
+    slave_count = ndb.IntegerProperty(default=0)
     content = model.FilteredHtmlProperty(verbose_name=_("Content"))
+
+    """Pagination for slaves."""
+    def default_pagination(self):
+        raise Exception("")
 
     def _validation(self):
         return {
@@ -48,3 +51,11 @@ class SlavePostModel(PostModel):
                     "required": (),
                     }
                 }
+
+    @ndb.transactional
+    def put(self, master=None, pagination=None, *args, **kwds):
+        super(SlavePostModel, self).put(*args, **kwds);
+        master = master or self.key.parent().get()
+        master.slave_count += 1
+        master.put()
+        if pagination: pagination.slave_insert_hook(self)

@@ -13,7 +13,8 @@
 #   limitations under the License.
 
 from google.appengine.ext import ndb
-from guss import utest, utils
+from google.appengine.datastore.datastore_query import Cursor
+from guss import utest, utils, post
 import time
 
 class TestUtils(utest.TestCase):
@@ -33,7 +34,7 @@ class TestUtils(utest.TestCase):
         self.assertEqual(utils.page_url_modified(h, "ok", "True"), "http://guco.dz?ok=True")
         self.assertEqual(utils.page_url_modified(h, "cursor", "ZZZ"), "http://guco.dz?cursor=ZZZ&ok=False")
 
-    def test_pagination(self):
+    def test_next_prev_pagination(self):
         class DummyModel(ndb.Model):
             created = ndb.DateTimeProperty(auto_now_add=True)
             num = ndb.IntegerProperty()
@@ -65,3 +66,39 @@ class TestUtils(utest.TestCase):
                 limit=10,
                 cursor_str=pcursor)
         self.assertEqual(pagin3.items()[0].num, 0)
+
+    def test_numbered_pagination(self):
+        class DummyMaster(post.MasterPostModel):
+            pass
+        class DummySlave(post.SlavePostModel):
+            a = ndb.IntegerProperty()
+        master = DummyMaster()
+        master.put()
+        pagination_new = lambda page: utils.NumberedPagination(model_cls=DummySlave,
+                order="created",
+                limit=7,
+                page=page,
+                master_key=master.key,
+                )
+        pagination = pagination_new(1)
+        self.assertEqual(pagination.last_page_number(), 1)
+        for i in range(utils.ATOMIC_PAGE_STEP):
+            DummySlave(parent=master.key, a=i+1).put(pagination=pagination)
+            clist = pagination.get_cursor_list()
+            self.assertEqual(len(clist), 1)
+        DummySlave(parent=master.key, a=6).put(pagination=pagination)
+        clist = pagination.get_cursor_list()
+        self.assertEqual(len(clist), 2)
+        ents = DummySlave.query(ancestor=master.key).order(DummySlave.created) \
+                .get(start_cursor=Cursor(urlsafe=clist[1]))
+        self.assertEqual(ents.a, 6)
+
+        for i in range(utils.ATOMIC_PAGE_STEP+1, 10):
+            DummySlave(parent=master.key, a=i+1).put(pagination=pagination)
+        pagination = pagination_new(1)
+        self.assertEqual(len(pagination.items()), 5)
+        self.assertEqual(pagination.items()[0].a, 1)
+        pagination = pagination_new(2)
+        self.assertEqual(len(pagination.items()), 5)
+        self.assertEqual(pagination.items()[0].a, 6)
+        self.assertEqual(pagination.last_page_number(), 2)
