@@ -1,0 +1,5 @@
+{% extends "post_view.html" %}
+
+{% block reply_form_fields %}
+    {{ form.content_edit_field(slave_model, "content") }}
+{% endblock %}

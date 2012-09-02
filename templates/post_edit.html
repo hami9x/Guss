@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% import "form.html" as form %}
+{% block body %}
+    <form method="post" action="" id="content-edit-form">
+        <ul>
+            <li>{{ form.input_field(model, "title") }}</li>
+            <li>{{ form.content_edit_field(model, "content") }}</li>
+            {% block additional %}
+            {% endblock %}
+            <li>{{ form.submit() }}</li>
+        </ul>
+        {% if postid %}<input type="hidden" name="__id" value="{{ postid }}">{% endif %}
+    </form>
+{% endblock %}

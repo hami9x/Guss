@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% import "form.html" as form %}
+{% import "utils.html" as utils %}
+{% block body %}
+<div class="row"><h3 id="title">
+        {{ model.title|escape }}</h3>
+</div>
+<div class="row">
+    {{ model.display_created() }}, {{ _("by %(author)s", author=model.display_author()) }}
+</div>
+<div class="row">
+    {{ model.content }}
+</div>
+<div class="row">
+    {% if can_edit() %}
+        <a href="{{ edit_url }}">{{ _("Edit") }}</a>
+    {% endif %}
+</div>
+
+{% for slave in slave_pagin.items() %}
+<div class="row">
+    {{ slave.display_created() }}, {{ _("by %(author)s", author=slave.display_author()) }}
+</div>
+<div class="row">
+    {{ slave.content }}
+</div>
+{% endfor %}
+
+{% block slave_pagination %}
+{% endblock %}
+
+<div class="row">
+    <form id="content-edit-form" method="post" action="">
+        <input type="hidden" name="__master" value="{{ model.key.id() }}">
+        {% block reply_form_fields %}
+        {% endblock %}
+        {{ form.submit("Post") }}
+    </form>
+</div>
+{% endblock %}

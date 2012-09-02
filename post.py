@@ -40,8 +40,6 @@ class MasterPostModel(PostModel):
         if count > 0:
             self.slug += "-%d" % (count+1)
 
-    def get_slaves(self):
-        raise Exception("Unimplemented, this method should be overridden.")
 
 class SlavePostModel(PostModel):
     """Base class for things like comments, forum replies..."""

@@ -1,28 +1,16 @@
-{% extends "base.html" %}
-{% import "form.html" as form %}
-{% import "utils.html" as utils %}
-{% block body %}
-    <h3 id="title">{{ model.title|escape }}</h3>
-    {{ model.display_created() }}, {{ _("by %(author)s", author=model.display_author()) }}
-    <p>{{ model.content }}</p>
-    {% if can_edit() %}
-        <a href="{{ edit_url }}">{{ _("Edit") }}</a>
-    {% endif %}
+{% extends "post_view.html" %}
 
-    <br />
-    {% for comment in comments_pagin.items() %}
-        {{ comment.display_created() }}, {{ _("by %(author)s", author=comment.display_author()) }}
-        <p>{{ comment.content }}</p>
-    {% endfor %}
-    <p>{{ utils.next_prev_navi(comments_pagin) }}</p>
-    <form method="post" action="">
-        {% if not site.logged_in() %}
-            {{ form.input_field(guest_comment_model, "username") }}
-            {{ form.input_field(guest_comment_model, "email") }}
-            {{ form.input_field(guest_comment_model, "website") }}
-        {% endif %}
-        {{ form.textarea_field(comment_model, "content") }}
-        <input type="hidden" name="__master" value="{{ model.key.id() }}">
-        {{ form.submit("Post comment") }}
-    </form>
+{% block slave_pagination %}
+<div class="row">
+    {{ utils.next_prev_navi(slave_pagin) }}</p>
+</div>
+{% endblock %}
+
+{% block reply_form_fields %}
+    {% if not site.logged_in() %}
+        {{ form.input_field(guest_comment_model, "display_name") }}
+        {{ form.input_field(guest_comment_model, "email") }}
+        {{ form.input_field(guest_comment_model, "website") }}
+    {% endif %}
+    {{ form.textarea_field(slave_model, "content") }}
 {% endblock %}

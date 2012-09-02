@@ -16,6 +16,7 @@ import random, string, re, urlparse, urllib, math
 from unidecode import unidecode
 from google.appengine.datastore.datastore_query import Cursor
 from google.appengine.ext import ndb
+from google.appengine.api import memcache
 
 def generate_random_string(length):
     return "".join(random.choice(string.ascii_letters + string.digits) for x in range(length))
@@ -112,17 +113,24 @@ class NumberedPagination(Pagination):
                         start_cursor=Cursor(urlsafe=clist.cursors[-1]))
                 clist.cursors.append(next_cursor.urlsafe())
                 clist.put()
+                memcache.set(self.memcache_clist_keyname(), clist)
+
+    def memcache_clist_keyname(self):
+        return self.master_key.urlsafe()
 
     def get_cursor_list(self, get_obj=False):
-        clist = NumberedPaginationCursorModel.query(ancestor=self.master_key).fetch(2)
-        if len(clist) > 1:
-            raise Exception("There can be only 1 page cursor list.")
-        if len(clist) == 0:
-                clist = NumberedPaginationCursorModel(cursors=[""], parent=self.master_key)
-                clist.put()
-                ret = clist
-        else:
-            ret = clist[0]
+        ret = memcache.get(self.memcache_clist_keyname(), None)
+        if ret == None:
+            clist = NumberedPaginationCursorModel.query(ancestor=self.master_key).fetch(2)
+            if len(clist) > 1:
+                raise Exception("There can be only 1 page cursor list.")
+            if len(clist) == 0:
+                    clist = NumberedPaginationCursorModel(cursors=[""], parent=self.master_key)
+                    clist.put()
+                    ret = clist
+            else:
+                ret = clist[0]
+            memcache.set(self.memcache_clist_keyname(), ret)
         return ret if get_obj else ret.cursors
 
     def _get_cursor_list(self):

@@ -44,7 +44,7 @@
 {% macro textarea(model, field) %}
     <textarea name="{{ field }}" id="{{ field }}"
     class="{{ error_class(model, field) }}">
-        {{- form_getattr(model, field) -}}
+        {{- form_getattr(model, field) }}
     </textarea>
 {% endmacro %}
 
@@ -54,9 +54,9 @@
     {{ v_e(model, field) }}
 {% endmacro %}
 
-{% macro content_edit_field(model, field, id="content-edit") %}
+{% macro content_edit_field(model, field) %}
     <div class="content-edit-wrapper">
-        <div class="content-edit" id="{{ id }}">
+        <div class="content-edit" id="{{ field }}">
             {{ form_getattr(model, field) }}
         </div>
         <input type="hidden" id="hidden" name="{{ field }}" value=""/>
