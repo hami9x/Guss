@@ -36,5 +36,6 @@ app = webapp2.WSGIApplication([
                     webapp2.Route(r"/forum/thread/edit/<slug:[\w-]*>", handler="forum.ForumThreadEditHandler", name="forumthread-edit"),
                     webapp2.Route(r"/forum/thread/view/<slug:[\w-]*>", handler="forum.ForumThreadViewHandler", name="forumthread-view"),
                     webapp2.Route("/admin/dev/generate", handler="dev_tools.ModelGenerator", name="dev-generate"),
+                    webapp2.Route("/admin/dev/generate/replies", handler="dev_tools.ForumReplyGenerator", name="dev-generate-forum"),
                     webapp2.Route("/", handler="homepage.HomepageHandler", name="home"),
                 ], debug=True, config=tempconfig)

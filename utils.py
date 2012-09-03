@@ -153,15 +153,35 @@ class PaginationNaviGenerator(object):
     def __init__(self, pagination):
         self._pagination = pagination
 
+    """Generate page numbers for pagination, used in templates.
+    Args:
+        maximum_links: maximum number of links on the navigation, should be an odd number
+    """
     def __call__(self, maximum_links):
         return self.generate(maximum_links, self._pagination.page, self._pagination.last_page_number())
 
     def generate(self, maximum_links, current, last):
-        step = lambda start, stop: ((abs(stop - start)) // (maximum_links//2)) or 1
-        for i in reversed(range(current, 0, -step(current, 1))):
-            if i!=current:
-                yield i
+        maximum = maximum_links-1 if (maximum_links % 2 != 0) else maximum_links-2
+        maxim_before = maxim_after = maximum // 2
+        if current-1 < maximum // 2:
+            maxim_before = current-1
+            maxim_after = maximum - maxim_before
+        elif last-current < maximum //2:
+            maxim_after = last-current
+            maxim_before = maximum - maxim_after
+        step = lambda start, stop, maxim: (abs(stop - start) // maxim) or 1
+        if maxim_before:
+            j = 0
+            for i in reversed(range(current, 0, -step(current, 1, maxim_before))):
+                if i!=current:
+                    j += 1
+                    if j>maxim_before: break
+                    yield i
         yield current
-        for i in range(current, last+1, step(current, last)):
-            if i!=current:
-                yield i
+        if maxim_after:
+            j = 0
+            for i in range(current, last+1, step(current, last, maxim_after)):
+                if i!=current:
+                    j += 1
+                    if j>maxim_after: break
+                    yield i

@@ -105,6 +105,7 @@ class TestUtils(utest.TestCase):
 
     def test_pagination_navi_generator(self):
         gen = utils.PaginationNaviGenerator(None)
-        self.assertEqual([1, 2, 3], [i for i in gen.generate(4, 1, 3)])
+        self.assertEqual([1, 2, 3], [i for i in gen.generate(5, 1, 3)])
         self.assertEqual([2, 5, 8, 9, 10], [i for i in gen.generate(5, 8, 10)])
         self.assertEqual([1, 5, 9, 12, 15], [i for i in gen.generate(5, 9, 16)])
+        self.assertEqual(13, len([i for i in gen.generate(13, 2, 100)]))

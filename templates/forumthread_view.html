@@ -9,9 +9,9 @@
                 >&laquo;</a>
         </li>
         <li class="arrow {% if slave_pagin.page == 1 %}unavailable{% endif %}">
-            <a href="{% if slave_pagin.page > 1 %}{{ page_link(slave_pagin.page-1) }}{% endif %}">&lsaquo;</a>
+            <a href="{% if slave_pagin.page > 1 %}{{ page_link(slave_pagin.page-1) }}{% endif %}">&lt;</a>
         </li>
-        {% for i in slave_pagin.navi_generate(7) %}
+        {% for i in slave_pagin.navi_generate(11) %}
             <li {% if i == slave_pagin.page %}class="current"{% endif %}>
                 <a href="{{ page_link(i) }}">{{ i }}</a>
             </li>
@@ -20,7 +20,7 @@
             <a href="{% if slave_pagin.page < slave_pagin.last_page_number() %}
                     {{ page_link(slave_pagin.page+1) }}
                 {% endif %}"
-            >&rsaquo;</a>
+            >&gt;</a>
         </li>
         <li class="arrow {% if slave_pagin.page == slave_pagin.last_page_number() %}unavailable{% endif %}">
             <a href="{% if slave_pagin.page < slave_pagin.last_page_number() %}
