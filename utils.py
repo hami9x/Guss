@@ -32,7 +32,7 @@ def slugify(text, delim=u"-"):
     return "untitled" if not result else result
 
 def page_url_modified(rhandler, name, val):
-    """Modify the query string of current page."""
+    """Return a new url with a specific param in the query string of current page modified."""
     full = urlparse.urlparse(rhandler.request.url)
     qdict = urlparse.parse_qs(full.query, True)
     if not isinstance(val, list): val = [val]
@@ -82,19 +82,24 @@ class NumberedPagination(Pagination):
         - Entities must only be added at the end or beginning
     If these rules are broken, the pagination cannot work right.
     And a limitation: the page limit (number of items per page) are converted to a multiple of ATOMIC_PAGE_STEP,
-    that means, for instance, ATOMIC_PAGE_STEP = 5 then limit=7 will be converted to 5, 12 converted to 10, etc.
+    that means, for instance, ATOMIC_PAGE_STEP = 5 then limit=7 will be converted to 10, 12 converted to 15, etc.
     """
     def __init__(self, model_cls, limit, order, page, master_key):
         self.master_key = master_key
-        limit = limit // ATOMIC_PAGE_STEP * ATOMIC_PAGE_STEP
+        limit = ((limit // ATOMIC_PAGE_STEP + 1) * ATOMIC_PAGE_STEP) if (limit % ATOMIC_PAGE_STEP != 0) else limit
         order = getattr(model_cls, order)
         self.query = model_cls.query(ancestor=master_key).order(order)
         clist = self._get_cursor_list().cursors
+        self._last_page_number = int(math.ceil(float(len(clist)) / (limit // ATOMIC_PAGE_STEP)))
+        if page<1:
+            page = 1
+        if page>self._last_page_number:
+            page = self._last_page_number
         cursor = Cursor(urlsafe=clist[(page-1) * (limit // ATOMIC_PAGE_STEP)])
-        self._last_page_number = math.ceil(len(clist) / (limit // ATOMIC_PAGE_STEP))
         self._items, unused_cursor, unused_more = self.query.fetch_page(limit, start_cursor=cursor)
         self.model_cls = model_cls
         self.limit = limit
+        self.page = page
 
     def last_page_number(self):
         return self._last_page_number
@@ -138,5 +143,25 @@ class NumberedPagination(Pagination):
             self._cursor_list = self.get_cursor_list(get_obj=True)
         return self._cursor_list
 
+    def navi_generate(self, *args, **kwds):
+        return PaginationNaviGenerator(self)(*args, **kwds)
+
 class NumberedPaginationCursorModel(ndb.Model):
     cursors = ndb.PickleProperty()
+
+class PaginationNaviGenerator(object):
+    def __init__(self, pagination):
+        self._pagination = pagination
+
+    def __call__(self, maximum_links):
+        return self.generate(maximum_links, self._pagination.page, self._pagination.last_page_number())
+
+    def generate(self, maximum_links, current, last):
+        step = lambda start, stop: ((abs(stop - start)) // (maximum_links//2)) or 1
+        for i in reversed(range(current, 0, -step(current, 1))):
+            if i!=current:
+                yield i
+        yield current
+        for i in range(current, last+1, step(current, last)):
+            if i!=current:
+                yield i

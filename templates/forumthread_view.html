@@ -1,5 +1,38 @@
 {% extends "post_view.html" %}
 
+{% block slave_pagination %}
+{% if slave_pagin.last_page_number() > 1 %}
+<div class="row">
+    <ul class="pagination">
+        <li class="arrow {% if slave_pagin.page == 1 %}unavailable{% endif %}">
+            <a href="{% if slave_pagin.page > 1 %}{{ page_link(1) }}{% endif %}"
+                >&laquo;</a>
+        </li>
+        <li class="arrow {% if slave_pagin.page == 1 %}unavailable{% endif %}">
+            <a href="{% if slave_pagin.page > 1 %}{{ page_link(slave_pagin.page-1) }}{% endif %}">&lsaquo;</a>
+        </li>
+        {% for i in slave_pagin.navi_generate(7) %}
+            <li {% if i == slave_pagin.page %}class="current"{% endif %}>
+                <a href="{{ page_link(i) }}">{{ i }}</a>
+            </li>
+        {% endfor %}
+        <li class="arrow {% if slave_pagin.page == slave_pagin.last_page_number() %}unavailable{% endif %}">
+            <a href="{% if slave_pagin.page < slave_pagin.last_page_number() %}
+                    {{ page_link(slave_pagin.page+1) }}
+                {% endif %}"
+            >&rsaquo;</a>
+        </li>
+        <li class="arrow {% if slave_pagin.page == slave_pagin.last_page_number() %}unavailable{% endif %}">
+            <a href="{% if slave_pagin.page < slave_pagin.last_page_number() %}
+                    {{ page_link(slave_pagin.last_page_number()) }}
+                {% endif %}"
+            >&raquo;</a>
+        </li>
+    </ul>
+</div>
+{% endif %}
+{% endblock %}
+
 {% block reply_form_fields %}
     {{ form.content_edit_field(slave_model, "content") }}
 {% endblock %}

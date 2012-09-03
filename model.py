@@ -68,8 +68,12 @@ class EscapedHtmlProperty(ndb.TextProperty):
         return cgi.escape(value)
 
 class FilteredHtmlProperty(ndb.TextProperty):
+    def _validate(self, value):
+        return value.strip()
+
     def _to_base_type(self, value):
-        return Cleaner(add_nofollow=True).clean_html(value)
+        value = value.strip()
+        return Cleaner(add_nofollow=True).clean_html(value) if value else ""
 
 class MyMetaModel(ndb.MetaModel):
     def __init__(cls, name, bases, classdict):

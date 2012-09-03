@@ -35,6 +35,11 @@ class ForumThreadViewHandler(post_handlers.PostViewHandler):
             page = 1
         return post.default_pagination(page=page)
 
+    def _additional_values(self):
+        return {
+                "page_link": lambda page: utils.page_url_modified(self, "page", page),
+                }
+
     def _post(self, slug=""):
         post = self._get_post_from_form()
         reply = self._slave_model_cls(parent=post.key, author=self.get_current_user().key)

@@ -111,7 +111,7 @@ class PostViewHandler(RequestHandler):
             "slave_pagin": self._slave_pagination(post),
             "slave_model": slave_model or self._slave_model_cls(),
             }
-        d.update(additional_values  or self._additional_values())
+        d.update(additional_values or self._additional_values())
         return d
 
     def _get(self, slug=""):

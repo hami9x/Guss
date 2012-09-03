@@ -1,5 +1,6 @@
 $(document).ready(function() {
     $(document).foundationCustomForms();
+    //$(document).foundationNavigation();
 
     $("#content-edit-form div.content-edit").hallo({
         plugins: {

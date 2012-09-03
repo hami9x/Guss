@@ -19,7 +19,7 @@ import time
 
 class TestUtils(utest.TestCase):
     def setUp(self):
-        self.init_db_stub()
+        self.init_gae_stub(True, True)
 
     def test_slugify(self):
         self.assertEqual(utils.slugify(u"abc đè"), "abc-de")
@@ -76,7 +76,7 @@ class TestUtils(utest.TestCase):
         master.put()
         pagination_new = lambda page: utils.NumberedPagination(model_cls=DummySlave,
                 order="created",
-                limit=7,
+                limit=5,
                 page=page,
                 master_key=master.key,
                 )
@@ -102,3 +102,9 @@ class TestUtils(utest.TestCase):
         self.assertEqual(len(pagination.items()), 5)
         self.assertEqual(pagination.items()[0].a, 6)
         self.assertEqual(pagination.last_page_number(), 2)
+
+    def test_pagination_navi_generator(self):
+        gen = utils.PaginationNaviGenerator(None)
+        self.assertEqual([1, 2, 3], [i for i in gen.generate(4, 1, 3)])
+        self.assertEqual([2, 5, 8, 9, 10], [i for i in gen.generate(5, 8, 10)])
+        self.assertEqual([1, 5, 9, 12, 15], [i for i in gen.generate(5, 9, 16)])
