@@ -16,7 +16,7 @@ import unittest
 from google.appengine.ext import testbed
 
 class TestCase(unittest.TestCase):
-    def init_gae_stub(self, datastore, memcache):
+    def init_gae_stub(self, datastore=True, memcache=False):
         self.testbed = testbed.Testbed()
         self.testbed.activate()
         if datastore:

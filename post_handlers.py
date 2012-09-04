@@ -18,7 +18,7 @@ from requesthandler import RequestHandler
 def can_user_edit_post(handler, model):
     return (
             (   handler.current_user_check_permission("edit_own_post")
-                and (handler.get_current_user().key == model.author)
+                and (handler.get_current_user().key == model.author_key())
             )
             or handler.current_user_check_permission("edit_all_post")
         )

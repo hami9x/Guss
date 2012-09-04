@@ -6,7 +6,7 @@
         {{ model.title|escape }}</h3>
 </div>
 <div class="row">
-    {{ model.display_created() }}, {{ _("by %(author)s", author=model.display_author()) }}
+    {{ model.display_created() }}, {{ _("by %(author)s", author=model.author) }}
 </div>
 <div class="row">
     {{ model.content }}
@@ -19,7 +19,7 @@
 
 {% for slave in slave_pagin.items() %}
 <div class="row">
-    {{ slave.display_created() }}, {{ _("by %(author)s", author=slave.display_author()) }}
+    {{ slave.display_created() }}, {{ _("by %(author)s", author=slave.author) }}
 </div>
 <div class="row">
     {{ slave.content }}

@@ -12,22 +12,22 @@
             <ul>
                 <li>
                     <table class="full">
-                        {#<thead>#}
-                            {#<tr>#}
-                                {#<th></th>#}
-                                {#{% for prop in props %}#}
-                                {#<th>{{ models[0].get_verbose_name(prop) }}</th>#}
-                                {#{% endfor %}#}
-                                {#<th></th>#}
-                            {#</tr>#}
-                        {#</thead>#}
+                        <thead>
+                            <tr>
+                                <th></th>
+                                {% for prop in props %}
+                                <th>{{ models[0].get_verbose_name(prop) }}</th>
+                                {% endfor %}
+                                <th></th>
+                            </tr>
+                        </thead>
                         <tbody>
                             {% for model in models %}
                             <tr>
                                 <td><input type="checkbox" name="checklist" id="checklist"
                                             value="{{model.key.id()}}"></td>
                                 {% for prop in props %}
-                                <td>{{ table_model_attr(model, prop) }}</td>
+                                <td>{{ form_getattr(model, prop) | escape }}</td>
                                 {% endfor %}
                                 {% for tool in toolbox %}
                                 <td><a href="{{ tool[1].get_uri(model) }}">{{ tool[0] }}</a></td>

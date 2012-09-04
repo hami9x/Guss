@@ -75,6 +75,16 @@ class FilteredHtmlProperty(ndb.TextProperty):
         value = value.strip()
         return Cleaner(add_nofollow=True).clean_html(value) if value else ""
 
+class AuthorProperty(ndb.KeyProperty):
+    def __get__(self, entity, unused_cls=None):
+        if entity is None:
+            return self
+        key = self._get_value(entity)
+        if key:
+            model = key.get()
+            return model.display_name or model.username
+        return None
+
 class MyMetaModel(ndb.MetaModel):
     def __init__(cls, name, bases, classdict):
         super(MyMetaModel, cls).__init__(name, bases, classdict)

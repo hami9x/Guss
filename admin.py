@@ -137,16 +137,9 @@ class AdminTableInterface(AdminRequestHandler):
                 order=order,
                 limit=limit,
                 cursor_str = self.request.get("cursor"),
-                );
-
-        def table_model_attr(model, attr):
-            """Help showing content of the columns."""
-            if attr.endswith("()"):
-                return getattr(model, attr[:-2])()
-            else: return getattr(model, attr)
+                )
 
         values = {
-                "table_model_attr": table_model_attr,
                 "models": pagin.items(),
                 "props": props,
                 "toolbox": self.option("toolbox"),

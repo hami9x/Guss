@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% import "form.html" as form %}
 {% block body %}
+<div class="row">
     <h2>{{ _("Add user") }}</h2>
     <form method="post" action="">
         <ul>
@@ -12,4 +13,5 @@
         </ul>
         {{ form.submit() }}
     </form>
+</div>
 {% endblock %}

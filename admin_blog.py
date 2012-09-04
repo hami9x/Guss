@@ -20,7 +20,7 @@ class AdminBlogHandler(admin.AdminTableInterface):
     def _check_permission(self): return self.current_user_check_permission("manage_blog")
 
     def table_options(self):
-        return self._table_options(blog.BlogModel, props=["title", "display_author()", "created"],
+        return self._table_options(blog.BlogModel, props=["title", "author", "created"],
                 toolbox=[(_("Edit"), admin.UriForTool("blog-edit", slug="slug"))],
                 links=[(_("Create new"), self.uri_for("blog-new"))]
         )

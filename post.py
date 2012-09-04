@@ -4,13 +4,12 @@ import model, utils
 
 class PostModel(model.FormModel):
     """Common base for all kinds of user content, including blog, forum posts, comments..."""
-    author = ndb.KeyProperty()
+    author = model.AuthorProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     content = model.EscapedHtmlProperty(verbose_name=_("Content"))
 
-    def display_author(self):
-        q = self.author.get()
-        return q.display_name or q.username
+    def author_key(self):
+        return self._properties.get("author")
 
     def display_created(self):
         return "%d/%d/%d" % (self.created.day, self.created.month, self.created.year)
@@ -36,10 +35,13 @@ class MasterPostModel(PostModel):
 
     def make_slug(self):
         self.slug = utils.slugify(self.title)
-        count = self.__class__.query(self.__class__.slug == self.slug).count()
-        if count > 0:
-            self.slug += "-%d" % (count+1)
-
+        count = 1; slug = self.slug; num = 2
+        while count > 0:
+            count = self.__class__.query(self.__class__.slug == slug).count()
+            if count <= 0: break
+            slug = "{}-{}".format(self.slug, num)
+            num += 1
+        self.slug = slug
 
 class SlavePostModel(PostModel):
     """Base class for things like comments, forum replies..."""
