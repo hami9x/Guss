@@ -1,12 +1,15 @@
 {% extends "base.html" %}
 {% block body %}
-    {% if user %}
-    {{ gettext("hello %(name)s", name=user.username) }}
-        <br/>
+    {%- if user -%}
+    <div class="welcome row">{{ gettext("hello %(name)s", name=user.username) }}</div>
+    <div class="row">
         <form method="post" action="{{logout_url}}">
-            <input type="submit" class="button" value="{{gettext("Logout")}}"/>
+            <input type="submit" class="small button" value="{{gettext("Logout")}}"/>
         </form>
+    </div>
     {% else %}
-        <a href="{{login_url}}" class="button">{{gettext("Login")}}</a>
+    <div class="row">
+        <a href="{{login_url}}" class="small button">{{gettext("Login")}}</a>
+    </div>
     {% endif %}
 {% endblock %}

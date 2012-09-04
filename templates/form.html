@@ -11,9 +11,7 @@
 {% endmacro %}
 
 {% macro error_class(model, field) %}
-    {% if model.get_errors().get(field) %}
-        error
-    {% endif %}
+    {%- if model.get_errors().get(field) %}error{% endif -%}
 {% endmacro %}
 
 {% macro field_label(model, field, show_optional=True) %}
@@ -42,9 +40,8 @@
 {% endmacro %}
 
 {% macro textarea(model, field) %}
-    <textarea name="{{ field }}" id="{{ field }}"
-    class="{{ error_class(model, field) }}">
-        {{- form_getattr(model, field) }}
+    <textarea name="{{ field }}" id="{{ field }}" class="{{ error_class(model, field) }}">
+        {{- form_getattr(model, field) -}}
     </textarea>
 {% endmacro %}
 
@@ -65,9 +62,9 @@
     <noscript>You must have javascript enabled to use this edit field.</noscript>
 {% endmacro %}
 
-{% macro submit(value="Submit") %}
+{% macro submit(value="Submit", classes="") %}
     {% set value= _(value) %}
-    <input type="submit" value="{{ value }}" class="button"/>
+    <input type="submit" value="{{ value }}" class="button {{ classes }}"/>
 {% endmacro %}
 
 {% macro boolean_combo(model, field) %}

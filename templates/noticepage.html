@@ -1,7 +1,11 @@
 {% extends "base.html" %}
-{% block head %}
+{% block head_additional %}
     {% if redirect %}<meta http-equiv="Refresh" content="5;url={{redirect}}">{% endif %}
 {% endblock %}
 {% block body %}
-    {{ message }}
+<div class="row">
+    <div class="panel callout radius">
+        <p>{{ message }}</p>
+    </div>
+</div>
 {% endblock %}

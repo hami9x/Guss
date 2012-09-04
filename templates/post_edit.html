@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% import "form.html" as form %}
 {% block body %}
+<div class="row">
     <form method="post" action="" id="content-edit-form">
         <ul>
             <li>{{ form.input_field(model, "title") }}</li>
@@ -11,4 +12,5 @@
         </ul>
         {% if postid %}<input type="hidden" name="__id" value="{{ postid }}">{% endif %}
     </form>
+</div>
 {% endblock %}

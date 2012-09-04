@@ -24,7 +24,7 @@ def register_permissions():
                 ("edit_own_post", _(u"Edit user's own posts.")),
                 ("edit_all_post", _(u"Edit posts of any users.")),
                 ("view_post", _(u"View user posts.")),
-                ("manage_post", _(u"Manage user posts.")),
+                ("manage_blog", _(u"Manage user posts.")),
                 ]
 
     for item in permissions:

@@ -1,4 +1,20 @@
 {% macro next_prev_navi(pagination) %}
-        {% if pagination.has_prev() %}<a href="{{ pagination.prev_page_url(site) }}">{{_("Previous")}}</a>{% endif %}
-        {% if pagination.has_next() %}<a href="{{ pagination.next_page_url(site) }}">{{_("Next")}}</a>{% endif %}
+    {% if pagination.has_prev() or pagination.has_next() %}
+    <ul class="button-group radius">
+        <li>
+            {% if pagination.has_prev() %}
+            <a href="{{ pagination.prev_page_url(site) }}" class="small button">{{_("&laquo; Previous")}}</a>
+            {% else %}
+            <span class="small button radius disabled">{{_("&laquo; Previous")}}</span>
+            {% endif %}
+        </li>
+        <li>
+            {% if pagination.has_next() %}
+            <a href="{{ pagination.next_page_url(site) }}" class="small button">{{_("Next &raquo;")}}</a>
+            {% else %}
+            <span class="small button radius disabled">{{_("Next &raquo;")}}</span>
+            {% endif %}
+        </li>
+    </ul>
+    {% endif %}
 {% endmacro %}

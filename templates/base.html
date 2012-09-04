@@ -7,6 +7,8 @@
             <link rel="stylesheet" href="/css/font-awesome.css" />
             <link rel="stylesheet" href="/css/foundation.css" />
             <link rel="stylesheet" href="/css/style.css" />
+            {% block head_additional %}
+            {% endblock %}
         {% endblock %}
     </head>
     <body>
@@ -14,6 +16,7 @@
         {% endblock %}
 
         {% block js %}
+            <script src="/js/libs/jquery.min.js"></script>
             <script src="/js/libs/foundation.min.js"></script>
             <script src="/js/libs/jquery-ui.min.js"></script>
             <script src="/js/hallojs/deps/rangy-core-1.2.3.js"></script>

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% import "form.html" as form %}
 {% block body %}
+<div class="row">
     <form class="custom" action="" method="post">
         <ul>
             {% for prop, val in props.iteritems() %}
@@ -26,4 +27,5 @@
         </ul>
         {{ form.submit("Save") }}
     </form>
+</div>
 {% endblock %}

@@ -141,7 +141,7 @@ class AdminTableInterface(AdminRequestHandler):
 
         def table_model_attr(model, attr):
             """Help showing content of the columns."""
-            if attr[-2:] == "()":
+            if attr.endswith("()"):
                 return getattr(model, attr[:-2])()
             else: return getattr(model, attr)
 

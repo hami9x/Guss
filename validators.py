@@ -81,6 +81,8 @@ class RequiredValidator(MinLengthValidator):
         return _(u"Cannot be blank")
 
     def __call__(self, value, **kwds):
+        try: value = value.strip()
+        except AttributeError: pass
         super(RequiredValidator, self).__call__(value, 1)
 validate_required = RequiredValidator()
 

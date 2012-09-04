@@ -21,7 +21,6 @@ form ul {
 }
 
 .content-edit {
-    width: 99%;
     min-height: 300px;
     margin: 30px auto;
     padding: 20px;
@@ -34,3 +33,23 @@ form ul {
     -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2), inset 0 0 10px rgba(0, 0, 0, 0.03);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2), inset 0 0 10px rgba(0, 0, 0, 0.03);
 }
+
+form.custom div.custom.dropdown {
+    display: inline-block;
+}
+
+div.row {
+    margin-bottom: 5px;
+}
+
+form table.full {
+    width: 100%;
+}
+
+div.float-right {
+    float: right;
+}
+
+/*span, div {*/
+    /*margin: 5px 0 5px;*/
+/*}*/

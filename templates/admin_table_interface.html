@@ -2,35 +2,66 @@
 {% import "utils.html" as utils %}
 {% import "form.html" as form %}
 {% block body %}
-    <form method="post" action="" class="custom">
+    <div class="row">
         {% for link in links %}
-            <a href="{{ link[1] }}">{{ link[0] }}</a>
+        <a href="{{ link[1] }}" class="small button">{{ link[0] }}</a>
         {% endfor %}
-        <table>
-            <tbody>
-                {% for model in models %}
-                    <tr>
-                        <td><input type="checkbox" name="checklist" id="checklist"
-                                    value="{{model.key.id()}}"></td>
-                        {% for prop in props %}
-                            <td>{{ table_model_attr(model, prop) }}</td>
-                        {% endfor %}
-                        {% for tool in toolbox %}
-                            <td><a href="{{ tool[1].get_uri(model) }}">{{ tool[0] }}</a></td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-                {% if models|count == 0 %}
-                    <tr><td>{{ _("No item added yet.") }}</td></tr>
-                {% endif %}
-            </tbody>
-        </table>
-        <select>
-            {% for operation in operations %}
-                <option name="{{ operation[0] }}">{{ operation[1] }}</option>
-            {% endfor %}
-        </select>
-        {{ form.submit("Action!") }}
-        <p>{{ utils.next_prev_navi(pagin) }}</p>
-    </form>
+    </div>
+    <div class="row">
+        <form method="post" action="" class="custom">
+            <ul>
+                <li>
+                    <table class="full">
+                        {#<thead>#}
+                            {#<tr>#}
+                                {#<th></th>#}
+                                {#{% for prop in props %}#}
+                                {#<th>{{ models[0].get_verbose_name(prop) }}</th>#}
+                                {#{% endfor %}#}
+                                {#<th></th>#}
+                            {#</tr>#}
+                        {#</thead>#}
+                        <tbody>
+                            {% for model in models %}
+                            <tr>
+                                <td><input type="checkbox" name="checklist" id="checklist"
+                                            value="{{model.key.id()}}"></td>
+                                {% for prop in props %}
+                                <td>{{ table_model_attr(model, prop) }}</td>
+                                {% endfor %}
+                                {% for tool in toolbox %}
+                                <td><a href="{{ tool[1].get_uri(model) }}">{{ tool[0] }}</a></td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                            {% if models|count == 0 %}
+                            <tr><td>{{ _("No item added yet.") }}</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </li>
+                <li class="row">
+                    <div class="five columns">
+                        <select class="small">
+                            {% for operation in operations %}
+                            <option name="{{ operation[0] }}">{{ operation[1] }}</option>
+                            {% endfor %}
+                        </select>
+                        {{ form.submit("Action!", classes="small") }}
+                    </div>
+                    <div class="five columns">
+                        <div class="row">
+                            <div class="one columns">
+                            </div>
+                            <div class="six columns">
+                                <div class="float-right">
+                                {{ utils.next_prev_navi(pagin) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </form>
+    </div>
 {% endblock %}

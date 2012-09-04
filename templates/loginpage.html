@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 {% block body %}
+<div class="row">
     <form method="post" action="">
         <ul>
-            <li>{{gettext("Username:")}} <input type="text" name="username"/></li>
-            <li>{{gettext("Password:")}} <input type="password" name="password"/></li>
+            <li>{{_("Username")}} <input type="text" name="username"/></li>
+            <li>{{_("Password")}} <input type="password" name="password"/></li>
             <li><input type="hidden" name="referer" value="{{referer}}"></li>
-            <li><input type="submit" class="button" value="{{gettext("Login")}}"/></li>
+            <li><input type="submit" class="button" value="{{_("Login")}}"/></li>
         </ul>
     </form>
+</div>
 {% endblock %}
