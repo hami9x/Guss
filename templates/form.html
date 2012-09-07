@@ -14,9 +14,9 @@
     {%- if model.get_errors().get(field) %}error{% endif -%}
 {% endmacro %}
 
-{% macro field_label(model, field, show_optional=True) %}
+{% macro field_label(model, field, text, show_optional=True) %}
     <label class="form-field-label {{ error_class(model, field) }}" for="{{ field }}">
-        {{ model.get_verbose_name(field) }}
+        {{ text or model.get_verbose_name(field) }}
         {%- if show_optional and not model.is_required(field) %} {{ _("(Optional)") }} {% endif -%}
     </label>
 {% endmacro %}
@@ -45,13 +45,14 @@
     </textarea>
 {% endmacro %}
 
-{% macro textarea_field(model, field) %}
-    {{ field_label(model, field) }}
+{% macro textarea_field(model, field, label_text) %}
+    {{ field_label(model, field, label_text) }}
     {{ textarea(model, field) }}
     {{ v_e(model, field) }}
 {% endmacro %}
 
-{% macro content_edit_field(model, field) %}
+{% macro content_edit_field(model, field, label_text, show_optional=True) %}
+    {{ field_label(model, field, label_text, show_optional) }}
     <div class="content-edit-wrapper">
         <div class="content-edit" id="{{ field }}">
             {{ form_getattr(model, field) }}

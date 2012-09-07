@@ -12,5 +12,5 @@
         {{ form.input_field(guest_comment_model, "email") }}
         {{ form.input_field(guest_comment_model, "website") }}
     {% endif %}
-    {{ form.textarea_field(slave_model, "content") }}
+    {{ form.textarea_field(slave_model, "content", label_text=_("Your comment")) }}
 {% endblock %}

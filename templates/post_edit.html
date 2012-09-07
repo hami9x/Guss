@@ -5,7 +5,7 @@
     <form method="post" action="" id="content-edit-form">
         <ul>
             <li>{{ form.input_field(model, "title") }}</li>
-            <li>{{ form.content_edit_field(model, "content") }}</li>
+            <li>{{ form.content_edit_field(model, "content", show_optional=False) }}</li>
             {% block additional %}
             {% endblock %}
             <li>{{ form.submit() }}</li>
