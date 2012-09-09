@@ -20,8 +20,11 @@ class CategoryModel(model.FormModel):
     direct_parent = ndb.KeyProperty()
 
 class ForumThreadEditHandler(post_handlers.MasterPostEditHandler):
-    def settings(self):
-        return self._settings(model_cls=ThreadModel, template="forumthread_edit", uri_id="forumthread-edit")
+    settings = utils.ObjectSettings(
+            post_cls=ThreadModel,
+            template_name="forumthread_edit",
+            uri_id="forumthread-edit"
+            )
 
 class ForumThreadViewHandler(post_handlers.PostViewHandler):
     def settings(self):

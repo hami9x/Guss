@@ -109,3 +109,20 @@ class TestUtils(utest.TestCase):
         self.assertEqual([2, 5, 8, 9, 10], [i for i in gen.generate(5, 8, 10)])
         self.assertEqual([1, 5, 9, 12, 15], [i for i in gen.generate(5, 9, 16)])
         self.assertEqual(13, len([i for i in gen.generate(13, 2, 100)]))
+
+    def test_cache_to_property(self):
+        class Dummy(object):
+            @utils.cache_to_property("_x")
+            def f(self, x):
+                return x
+        d = Dummy()
+        self.assertEqual(d.f(1), 1)
+        self.assertEqual(d.f(2), 1)
+        self.assertEqual(d._x, 1)
+
+    def test_object_settings(self):
+        class Dummy(object):
+            settings = utils.ObjectSettings(a=1, b=2)
+        d = Dummy()
+        self.assertEqual(d.settings.a, 1)
+        self.assertEqual(d.settings.b, 2)

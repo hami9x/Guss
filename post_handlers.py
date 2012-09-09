@@ -14,6 +14,7 @@
 
 from webapp2_extras.i18n import _
 from requesthandler import RequestHandler
+import utils
 
 def can_user_edit_post(handler, model):
     return (
@@ -24,64 +25,52 @@ def can_user_edit_post(handler, model):
         )
 
 class MasterPostEditHandler(RequestHandler):
-    def _settings(self, template, model_cls, uri_id):
-        self._template_name = template
-        self._model_cls = model_cls
-        self._uri_id = uri_id
-
-    def settings(self):
-        raise Exception("Must be overridden.")
+    settings = utils.ObjectSettings()
 
     def _check_permission(self):
-        return can_user_edit_post(self, self._thepost)
+        return can_user_edit_post(self, self.the_post())
+
+    @property
+    def post_cls(self):
+        return self.settings.post_cls
+
+    @utils.cache_to_property("_the_post")
+    def the_post(self, slug):
+        if slug:
+            return self.post_cls.query(self.post_cls.slug == slug).get()
+        else:
+            post = self.post_cls(title="", content="")
+            if self.logged_in():
+                post.author = self.get_current_user().key
+            return post
 
     def _handler_init(self, slug=""):
-        self.settings()
-        self._post_slug = slug
-        postid = self.request.get("__id")
-        def fn_invalid():
+        if self.the_post(slug) is None:
             self.render("noticepage", {
                 "message": _(u"This post does not exist."),
                 })
             self.stop()
 
-        if postid:
-            self._thepost = self._model_cls.get_by_id(int(postid))
-            if self._thepost == None:
-                return fn_invalid()
-        else:
-            if self._post_slug:
-                self._thepost = self._model_cls.query(self._model_cls.slug == self._post_slug).get()
-                if self._thepost == None:
-                    return fn_invalid()
-                postid = self._thepost.key.id()
-            else:
-                self._thepost = self._model_cls(title="", content="")
-                if self.logged_in():
-                    self._thepost.author = self.get_current_user().key
-        self._postid = postid
-
     def template_values(self):
         return {
-                "model": self._thepost,
-                "postid": self._postid,
+                "model": self.the_post(),
                 }
 
     def _get(self, *args, **kwds):
-        return self.render(self._template_name, self.template_values())
+        return self.render(self.settings.template_name, self.template_values())
 
-    def _post(self, *args, **kwds):
-        post = self._thepost
+    def _post(self, slug=""):
+        post = self.the_post()
         post.assign(self)
         if post.validate():
             if not post.slug:
                 post.make_slug()
             post.put()
 
-        if not self._post_slug:
-            self.redirect(self.uri_for(self._uri_id, slug=post.slug))
+        if not slug:
+            self.redirect(self.uri_for(self.settings.uri_id, slug=post.slug))
         else:
-            return self.render(self._template_name, self.template_values())
+            return self.render(self.settings.template_name, self.template_values())
 
 class PostViewHandler(RequestHandler):
     def _handler_init(self, *args, **kwds):

@@ -49,8 +49,11 @@ class GuestAuthorModel(model.FormModel):
                 }
 
 class BlogEditHandler(post_handlers.MasterPostEditHandler):
-    def settings(self):
-        return self._settings(model_cls=BlogModel, template="blog_edit", uri_id="blog-edit")
+    settings = utils.ObjectSettings(
+            post_cls=BlogModel,
+            template_name="blog_edit",
+            uri_id="blog-edit"
+            )
 
 class BlogViewHandler(post_handlers.PostViewHandler):
     def settings(self):

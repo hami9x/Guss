@@ -31,6 +31,21 @@ def slugify(text, delim=u"-"):
     result = unicode(delim.join(result))
     return "untitled" if not result else result
 
+def cache_to_property(prop):
+    def decorator(fn):
+        def wrapper(obj, *args, **kwds):
+            if not hasattr(obj, prop):
+                setattr(obj, prop, fn(obj, *args, **kwds))
+            return getattr(obj, prop)
+        return wrapper
+    return decorator
+
+#TODO: test
+class ObjectSettings(object):
+    def __init__(self, **kwds):
+        for k, v in kwds.items():
+            setattr(self, k, v)
+
 def page_url_modified(rhandler, name, val):
     """Return a new url with a specific param in the query string of current page modified."""
     full = urlparse.urlparse(rhandler.request.url)
